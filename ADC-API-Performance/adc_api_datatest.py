@@ -80,7 +80,7 @@ if __name__ == "__main__":
     
     # Tunr response into pandas dataframe 
     json_response_df = json_normalize(query_dict)
-    json_response_df["Date/Time"] = downloaded_at
+    
     
     # Perform the query. Time it
     start_time = time.time()
@@ -92,8 +92,8 @@ if __name__ == "__main__":
     # Append results 
     json_response_df["NumberRepertoire"] = len(norm_facets)
     json_response_df["RepertoireCount"] = sum(norm_facets["count"])
+    json_response_df["Date/Time"] = dates
     
-    
-    json_response_df.to_csv(output_dir + "_PerformanceTesting_" + str(date_f) + "_" + str(time_f) + "_Query_Times_" + str(base_url.split("//")[1].split(".")[0]) + "_" + str(base_url.split("/")[-1]) + ".csv")
+    json_response_df.to_csv(output_dir + "_PerformanceTesting_" + str(date_f) + "_" + str(time_f) + "_Query_Times_" + str(base_url.split("//")[1].split(".")[0]) + "_" + str(base_url.split("/")[-1]) + ".csv",sep=",")
     
     
