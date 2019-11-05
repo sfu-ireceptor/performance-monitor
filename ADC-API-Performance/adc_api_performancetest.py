@@ -69,13 +69,12 @@ if __name__ == "__main__":
     # Get the HTTP header information (in the form of a dictionary)
     header_dict = getHeaderDict()
     
-    # Get all JSON files
     files = []
     for r, d, f in os.walk(query_files):
         for file in f:
             if '.json' in file:
                 files.append(os.path.join(r, file))
-    # Perform queries 
+    
     for item in files:
         if "checkpoint" in item:
             continue
@@ -108,6 +107,6 @@ if __name__ == "__main__":
             json_response_df['Date/TimeConverted'] = json_response_df['Date/Time'].dt.tz_localize('UTC').dt.tz_convert('US/Pacific')
 
             # Save into CSV for later visualizing 
-            json_response_df.to_csv(output_dir + "_PerformanceTesting_" + str(date_f) + "_" + str(time_f) + "_Query_Times_" + str(base_url.split("//")[1].split(".")[0]) + "_" + str(base_url.split("/")[-1]) + ".csv",sep=",")
+            json_response_df.to_csv(output_dir + "_PerformanceTesting_" + str(date_f) + "_" + str(time_f) + "_Query_Times_" + str(base_url.split("//")[1].split(".")[0]) + "_" + str(base_url.split("/")[-1]) + "_"+ item.split(".")[1].split("/")[-1] +  ".csv",sep=",")
     
     
