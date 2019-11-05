@@ -69,12 +69,14 @@ if __name__ == "__main__":
     # Get the HTTP header information (in the form of a dictionary)
     header_dict = getHeaderDict()
     
+    # Get all JSON files
     files = []
     for r, d, f in os.walk(query_files):
         for file in f:
             if '.json' in file:
                 files.append(os.path.join(r, file))
     
+    # Perform query for each JSON file
     for item in files:
         if "checkpoint" in item:
             continue
@@ -91,7 +93,6 @@ if __name__ == "__main__":
 
             # Tunr response into pandas dataframe 
             json_response_df = json_normalize(query_dict)
-
 
             # Perform the query. Time it
             start_time = time.time()
