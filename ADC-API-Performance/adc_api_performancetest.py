@@ -9,6 +9,7 @@ import time                     # time stamps
 import pandas as pd
 from pandas.io.json import json_normalize # parse JSON response into pandas df 
 import argparse                 # Input parameters from command line 
+import os
 
 def getArguments():
     # Set up the command line parser
@@ -68,34 +69,45 @@ if __name__ == "__main__":
     # Get the HTTP header information (in the form of a dictionary)
     header_dict = getHeaderDict()
     
-    # Get timestampt
-    dates = pd.to_datetime('today')
-    dates_str = str(dates)
-    date_f = dates_str.split(" ")[0]
-    time_f = dates_str.split(" ")[1].split(".")[0]
-    downloaded_at = date_f + "_"+time_f
-    
-    # Load file
-    query_dict = process_json_files(force,verbose,query_files)
-    
-    # Tunr response into pandas dataframe 
-    json_response_df = json_normalize(query_dict)
-    
-    
-    # Perform the query. Time it
-    start_time = time.time()
-    query_json = processQuery(query_url, header_dict, expect_pass, query_dict, verbose, force)
-    total_time = time.time() - start_time
-    # Turn query response into pandas dataframe
-    norm_facets = json_normalize(query_json['Facet'])
-    # Append results 
-    json_response_df["TimeTaken(s)"] = total_time
-    json_response_df["NumberRepertoire"] = len(norm_facets)
-    json_response_df["RepertoireCount"] = sum(norm_facets["count"])
-    json_response_df["Date/Time"] = dates
-    json_response_df['Date/TimeConverted'] = json_response_df['Date/Time'].dt.tz_localize('UTC').dt.tz_convert('US/Pacific')
+    # Get all JSON files
+    files = []
+    for r, d, f in os.walk(query_files):
+        for file in f:
+            if '.json' in file:
+                files.append(os.path.join(r, file))
+    # Perform queries 
+    for item in files:
+        if "checkpoint" in item:
+            continue
+        else:
+            # Get timestampt
+            dates = pd.to_datetime('today')
+            dates_str = str(dates)
+            date_f = dates_str.split(" ")[0]
+            time_f = dates_str.split(" ")[1].split(".")[0]
+            downloaded_at = date_f + "_"+time_f
 
-    # Save into CSV for later visualizing 
-    json_response_df.to_csv(output_dir + "_PerformanceTesting_" + str(date_f) + "_" + str(time_f) + "_Query_Times_" + str(base_url.split("//")[1].split(".")[0]) + "_" + str(base_url.split("/")[-1]) + ".csv",sep=",")
+            # Load file
+            query_dict = process_json_files(force,verbose,item)
+
+            # Tunr response into pandas dataframe 
+            json_response_df = json_normalize(query_dict)
+
+
+            # Perform the query. Time it
+            start_time = time.time()
+            query_json = processQuery(query_url, header_dict, expect_pass, query_dict, verbose, force)
+            total_time = time.time() - start_time
+            # Turn query response into pandas dataframe
+            norm_facets = json_normalize(query_json['Facet'])
+            # Append results 
+            json_response_df["TimeTaken(s)"] = total_time
+            json_response_df["NumberRepertoire"] = len(norm_facets)
+            json_response_df["RepertoireCount"] = sum(norm_facets["count"])
+            json_response_df["Date/Time"] = dates
+            json_response_df['Date/TimeConverted'] = json_response_df['Date/Time'].dt.tz_localize('UTC').dt.tz_convert('US/Pacific')
+
+            # Save into CSV for later visualizing 
+            json_response_df.to_csv(output_dir + "_PerformanceTesting_" + str(date_f) + "_" + str(time_f) + "_Query_Times_" + str(base_url.split("//")[1].split(".")[0]) + "_" + str(base_url.split("/")[-1]) + ".csv",sep=",")
     
     
