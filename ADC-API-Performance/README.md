@@ -10,4 +10,4 @@ To use modules in that library:
 
 `python3`
 
-`import curlairripa`
+`from curlairripa import *`
