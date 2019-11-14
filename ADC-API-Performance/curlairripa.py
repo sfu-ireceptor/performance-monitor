@@ -2,7 +2,7 @@
 # AUTHORS: Brian Corrie, Laura Gutierrez Funderburk
 # SUPERVISOR: JAMIE SCOTT, FELIX BREDEN, BRIAN CORRIE
 # CREATED ON: MAY 20, 2019
-# LAST MODIFIED ON: November 11, 2019
+# LAST MODIFIED ON: November 13, 2019
 
 import urllib.request, urllib.parse
 import json
@@ -55,9 +55,12 @@ def processQuery(query_url, header_dict, expect_pass, query_dict={}, verbose=Fal
         print('ERROR: Reason =' + str(e))
         return json.loads('[]')
 
-    # Convert the response to JSON so we can process it easily.
+    # Convert the response to JSON or save TSV so we can process it easily.
     try:
-        json_data = json.loads(url_response)
+        if "\t" in url_response:
+            json_data = url_response
+        else:
+            json_data = json.loads(url_response)
     except json.decoder.JSONDecodeError as error:
         if force:
             print("WARNING: Unable to process JSON response: " + str(error))
