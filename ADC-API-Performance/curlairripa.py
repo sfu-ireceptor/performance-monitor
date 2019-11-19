@@ -58,15 +58,19 @@ def processQuery(query_url, header_dict, expect_pass, query_dict={}, verbose=Fal
         return json.loads('[]')
 
 def parse_query(url_response,filename):
-    
+    # This function takes as input a url_response obtained using the processQuery() function, and a file name 
+    # and creates either a JSON or TSV file with the query response 
     try:
+        # Check if processQuery returns an empty query and warn the user
         if url_response ==[]:
             print("WARNING: empty query")
+        # Save as TSV if values are separated by tabs
         elif '\t' in url_response:
             with open(str(filename) + ".tsv","w") as f:
                 for item in url_response:
                     f.write(item)
             f.close()
+        # Alternative case - save as JSON file 
         else:
             json_data = json.loads(url_response)
             with open(str(filename) + "_OUT.json", 'w') as f:
@@ -90,24 +94,24 @@ def initHTTP():
 def process_json_files(force,verbose,query_file):
         
         # Open the JSON query file and read it as a python dict.
-        with open(query_file, 'r') as f:
-            try: 
-                # Load file
-                query_dict = json.load(f)
+    with open(query_file, 'r') as f:
+        try: 
+            # Load file
+            query_dict = json.load(f)
 
-                if verbose:
-                    print('INFO: Performing query: ' + str(query_dict))    
-                return query_dict
+            if verbose:
+                print('INFO: Performing query: ' + str(query_dict))    
+            return query_dict
                 
-            except IOError as error:
-                print("ERROR: Unable to open JSON file " + query_file + ": " + str(error))
-            except json.JSONDecodeError as error:
-                if force:
-                    print("WARNING: JSON Decode error detected in " + query_file + ": " + str(error))
-                    with open(query_file, 'r') as f:
-                        query_dict = f.read().replace('\n', '')
-                else:
-                    print("ERROR: JSON Decode error detected in " + query_file + ": " + str(error))
-            except Exception as error:
-                print("ERROR: Unable to open JSON file " + query_file + ": " + str(error))
+        except IOError as error:
+            print("ERROR: Unable to open JSON file " + query_file + ": " + str(error))
+        except json.JSONDecodeError as error:
+            if force:
+                print("WARNING: JSON Decode error detected in " + query_file + ": " + str(error))
+                with open(query_file, 'r') as f:
+                    query_dict = f.read().replace('\n', '')
+            else:
+                print("ERROR: JSON Decode error detected in " + query_file + ": " + str(error))
+        except Exception as error:
+            print("ERROR: Unable to open JSON file " + query_file + ": " + str(error))
 
