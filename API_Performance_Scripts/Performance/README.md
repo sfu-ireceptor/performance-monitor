@@ -18,7 +18,7 @@ python3 queries.py -h
        -h, --help     show this help message and exit
        -v, --verbose  Run the program in verbose mode.
 
-## Stage 2: Generate plots from queries
+## Stage 2: Generate plots from query results 
 
 ### Usage
 
