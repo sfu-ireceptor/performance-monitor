@@ -52,6 +52,10 @@ python3 plot_performance.py -h
 
 ![Bar](./SamplePlots/TotalSequenceSamplesALLIPAS.png)
 
+#### Query times (all queries, one API Service per plot)
+
 ![AllQ](./SamplePlots/QueryTimesAllQueriesallqueries2019110520191205.png)
+
+#### Query times (selected queries, all API services in a single plot)
 
 ![AllIPA](./SamplePlots/QueryTimesSelectedQueriesALLIPASOnePlot2019110520191205.png)
