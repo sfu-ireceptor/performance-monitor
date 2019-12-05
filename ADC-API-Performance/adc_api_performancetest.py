@@ -2,7 +2,7 @@
 ######### AUTHOR: LAURA GUTIERREZ FUNDERBURK
 ######### SUPERVISOR: JAMIE SCOTT, FELIX BREDEN, BRIAN CORRIE
 ######### CREATED ON: October 31, 2019
-######### LAST MODIFIED ON: November 18, 2019
+######### LAST MODIFIED ON: December 5, 2019
 
 from curlairripa import *       # https://test.pypi.org/project/curlairripa/ 
 import time                     # time stamps
@@ -306,22 +306,22 @@ def getArguments():
     # Output Directory - where Performance test results will be stored 
     parser.add_argument(
         "base",
-        help="Indicate the full path to where performance test results will be stored."
+        help="Indicate the full path to where performance test results will be stored"
     )
     # Array with URL
     parser.add_argument(
         "ipa_arr",
-        help="Array containing URL to API server."
+        help="Array containing URL to API server  (e.g. https://airr-api2.ireceptor.org)"
     )
     # Entry point
     parser.add_argument(
         "entry_point",
-        help="Options: 'rearragement' or 'repertoire'."
+        help="Options: string 'rearragement' or string 'repertoire'"
     )
     
     parser.add_argument(
             "json_files",
-        help="Enter the names of JSON files with query field name and value."
+        help="Enter full path to JSON queries"
     )
 
     # Verbosity flag
@@ -386,6 +386,7 @@ if __name__ == "__main__":
             # Perform the query. Time it
             start_time = time.time()
             query_json = processQuery(query_url, header_dict, expect_pass, query_dict, verbose, force)
+            query_json = json.loads(query_json)
             
 #             # Load the repertoires
 #             try:
@@ -399,7 +400,7 @@ if __name__ == "__main__":
             all_facets_count.append(norm_facets)
             # Append results 
             json_response_df["TimeTaken(s)"] = total_time
-            json_response_df["NumberRepertoire"] = len(norm_facets)
+            json_response_df["NumberRepertoire"] = len(norm_facets[norm_facets['count']!=0])
             json_response_df["NumberRearrangement"] = sum(norm_facets["count"])
             json_response_df["Date/Time"] = dates
             json_response_df['Date/TimeConverted'] = json_response_df['Date/Time'].dt.tz_localize('UTC').dt.tz_convert('US/Pacific')
