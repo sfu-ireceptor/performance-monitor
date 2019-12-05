@@ -2,10 +2,23 @@
 
 ## ADC API Performance Testing Script 
 
-### Sample Usage
+#### Usage
 
-`python3 adc_api_performancetest.py '/home/ubuntu/ireceptor-monitor/ADC_API_Testing/Results/' 'https://airr-api2.ireceptor.org/airr/v1' 'rearrangement' "/home/ubuntu/ireceptor-monitor/ADC_API_Testing/JSON/"
+`python3 adc_api_performancetest.py -h
 `
+
+    usage: adc_performance_testing.py [-h] [-v]
+                                      base ipa_arr entry_point json_files
+
+    positional arguments:
+      base           Indicate the full path to where performance test results will be stored 
+      ipa_arr        Array containing URL to API server (e.g. https://airr-api2.ireceptor.org)
+      entry_point    Options: string 'rearragement' or string 'repertoire'
+      json_files     Enter full path to JSON queries 
+      
+    optional arguments:
+      -h, --help     show this help message and exit
+      -v, --verbose  Run the program in verbose mode.
 
 ## curlairripa Python Package 
 
