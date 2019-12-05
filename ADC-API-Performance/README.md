@@ -12,7 +12,7 @@
 
     positional arguments:
       base           Indicate the full path to where performance test results will be stored 
-      ipa_arr        Array containing URL to API server (e.g. https://airr-api2.ireceptor.org)
+      ipa_arr        String containing URL to API server (e.g. https://airr-api2.ireceptor.org)
       entry_point    Options: string 'rearragement' or string 'repertoire'
       json_files     Enter full path to JSON queries 
       
