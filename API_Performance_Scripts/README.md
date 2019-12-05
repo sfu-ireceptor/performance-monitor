@@ -2,7 +2,9 @@
 
 #### Summary
 
-This directory contains python and shell scripts whose purpose is to conduct tests at the Sequences Data iReceptor Service level. Serices include
+This directory contains python and shell scripts whose purpose is to conduct tests at the Sequences Data iReceptor Service level. 
+
+Services include
 
     https://ipa1.ireceptor.org/
     https://ipa2.ireceptor.org/
@@ -18,7 +20,7 @@ TSV tests are done at the v2/sequences_data level.
 
 This directory contains python and shell scripts whose purpose is to perform queries at the Sequences Summary iReceptor Service level. 
 
-Serices include
+Services include
 
     https://ipa1.ireceptor.org/
     https://ipa2.ireceptor.org/
