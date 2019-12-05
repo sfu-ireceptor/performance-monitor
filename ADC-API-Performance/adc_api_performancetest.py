@@ -311,7 +311,7 @@ def getArguments():
     # Array with URL
     parser.add_argument(
         "ipa_arr",
-        help="Array containing URL to API server  (e.g. https://airr-api2.ireceptor.org)"
+        help="String containing URL to API server  (e.g. https://airr-api2.ireceptor.org)"
     )
     # Entry point
     parser.add_argument(
