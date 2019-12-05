@@ -1,7 +1,7 @@
 ##Script Author: Laura Gutierrez Funderburk
 ##Supervised by: Dr. Felix Breden, Dr. Jamie Scott, Dr. Brian Corrie
 ##Created on: May 2 2019
-##Last modified on: July 22 2019
+##Last modified on: December 5 2019
 
 """Description:
 
@@ -192,15 +192,19 @@ def getArguments():
     )
 
     # Sample id 
-    parser.add_argument("sample_id")
+    parser.add_argument("sample_id",type=str,
+                    help='Corresponds to value found in _id API iReceptor Service value')
     # Junction length
     #parser.add_argument("junction_length")
     # Word search
-    parser.add_argument("words")
+    parser.add_argument("words",type=str,
+                    help='Comma-separated strings containing odd words to search for')
     # Sequence file path
-    parser.add_argument("TSV_dir")
+    parser.add_argument("TSV_dir",
+                    help='Full path where TSV files are stored')
     # ipa address
-    parser.add_argument("base_url")
+    parser.add_argument("base_url",
+                    help='URL pointing at API iReceptor Service, e.g. https://ipa1.ireceptor.org/')
     # Verbosity flag
     parser.add_argument(
         "-v",
