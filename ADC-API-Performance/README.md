@@ -1,6 +1,8 @@
 # Scripts
 
-## 
+## ADC API Performance Testing Script 
+
+`python3 adc_api_performancetest.py`
 
 ## curlairripa Python Package 
 
@@ -14,6 +16,5 @@ Ensure the curlairripa.py file is on the same directory.
 
 To use modules in that library:
 
-`python3`
 
 `from curlairripa import *`
