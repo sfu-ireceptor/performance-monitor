@@ -15,10 +15,7 @@
     |       +-- plot_performance.py	
     |       +-- queries.py	
     |       +-- run_queries.sh
-    +-- .github/workflows
-    |   +-- pythonapp.yml
-    |   +-- pythonpackage.yml
-    |   +-- pythonpublish.yml
+ 
 
 
 
