@@ -26,3 +26,4 @@ Serices include
     https://ipa4.ireceptor.org/
     http://ipa5.ireceptor.org/
 
+Performance tests are done at the v2/sequenes_summary level. 
