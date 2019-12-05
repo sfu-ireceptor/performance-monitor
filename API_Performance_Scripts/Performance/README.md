@@ -48,3 +48,6 @@ python3 plot_performance.py -h
 
 ## Sample plots generated with plot performance script
 
+[Pie](TotalSequenceSampleDistributionALLIPAS.png)
+
+[]
