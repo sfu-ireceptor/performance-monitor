@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script is to be run periodically to track query performance of production servers ipa1,ipa2,ipa3,ipa4,ipa5 
+# This script is to be run periodically to track query performance of production services ipa1,ipa2,ipa3,ipa4,ipa5 
 #  using crontab -e (or other cronjob software)
 #  This script runs queries for a single service 
 #  Service example: https://ipa1.ireceptor.org/ 
