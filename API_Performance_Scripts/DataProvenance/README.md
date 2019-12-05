@@ -8,7 +8,7 @@ Test coverage:
 - Check TSV passes AIRR standards
 - Check for the presence of 'odd words' in v_call, d_call, j_call fields.  
 - Check locus equality (for a given sequence, first three characters in v_call, d_call, j_call coincide)
-- For a given sequence, check length of junction_aa matches junction_aa_length match
+- For a given sequence, check length of junction_aa and junction_aa_length match
 
 ### Usage
 
