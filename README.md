@@ -1,5 +1,7 @@
 # Performance Testing and Data Provenance Scripts 
 
+This repository contains several python and shell scripts that perform data provenance checks on iReceptor API services, as well as performance tests on iReceptor API services and ADC API services. 
+
 ## Directory Structure
 
     +-- ADC_API Performance 
