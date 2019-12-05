@@ -388,7 +388,7 @@ if __name__ == "__main__":
             query_json = processQuery(query_url, header_dict, expect_pass, query_dict, verbose, force)
             query_json = json.loads(query_json)
             
-#             # Load the repertoires
+#             # Load the repertoires - this still fails for a reason :( 
 #             try:
 #                 data = airr.validate_rearrangement(query_json, validate=True)
 #             except airr.ValidationError as err:
@@ -406,10 +406,18 @@ if __name__ == "__main__":
             json_response_df['Date/TimeConverted'] = json_response_df['Date/Time'].dt.tz_localize('UTC').dt.tz_convert('US/Pacific')
             
             json_response_all_dfs.append(json_response_df)
-
-            # Save into CSV for later visualizing 
-            json_response_df.to_csv(output_dir + "_PerformanceTesting_" + str(date_f) + "_" + str(time_f) + "_Query_Times_" + str(base_url.split("//")[1].split(".")[0]) + "_" + str(base_url.split("/")[-1]) + "_"+ str(item.split(".")[0].split("/")[-1]) +  ".csv",sep=",")
             
+            # Store in array for storage of all query results into single CSV
+            df_list = [json_response_all_dfs[i] for i in range(len(json_response_all_dfs))]
+
+            # Keep this option if you want one CSV per query - might be cumbersome but who knows, also handy - Save into CSV for later visualizing 
+#             json_response_df.to_csv(output_dir + "_PerformanceTesting_" + str(date_f) + "_" + str(time_f) + "_Query_Times_" + str(base_url.split("//")[1].split(".")[0]) + "_" + str(base_url.split("/")[-1]) + "_"+ str(item.split(".")[0].split("/")[-1]) +  ".csv",sep=",")
+    
+    # Stack all results into single datafrane
+    stacked = pd.concat(df_list)
+    # Store content 
+    stacked.to_csv(output_dir + "_PerformanceTesting_" + str(date_f) + "_" + str(time_f) + "_Query_Times_" + str(base_url.split("//")[1].split(".")[0]) + "_" + str(base_url.split("/")[-1]) +  ".csv",sep=",")
+    
     print("\nADC-API iReceptor Performance Testing\n")
     base_url2 =  "https://airr-api2.ireceptor.org"
     call_dic = {"v_call":["TRBV20-1*01"],"d_call":['TRBD1*01'],"j_call":['TRBJ2-7*01']}
