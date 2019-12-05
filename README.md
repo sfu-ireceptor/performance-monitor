@@ -18,8 +18,9 @@ This repository contains several python and shell scripts that perform data prov
     |       +-- queries.py	
     |       +-- run_queries.sh
  
+## Requirements
 
-
+Python 3.5 or higher. 
 
 
 
