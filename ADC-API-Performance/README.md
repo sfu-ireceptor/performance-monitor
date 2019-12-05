@@ -2,7 +2,10 @@
 
 ## ADC API Performance Testing Script 
 
-`python3 adc_api_performancetest.py`
+### Sample Usage
+
+`python3 adc_api_performancetest.py '/home/ubuntu/ireceptor-monitor/ADC_API_Testing/Results/' 'https://airr-api2.ireceptor.org/airr/v1' 'rearrangement' "/home/ubuntu/ireceptor-monitor/ADC_API_Testing/JSON/"
+`
 
 ## curlairripa Python Package 
 
