@@ -50,4 +50,8 @@ python3 plot_performance.py -h
 
 ![Pie](./SamplePlots/TotalSequenceSampleDistributionALLIPAS.png)
 
-[]
+![Bar](./SamplePlots/TotalSequenceSamplesALLIPAS.png)
+
+![AllQ](./SamplePlots/QueryTimes(AllQueries_all queries)__ 2019-11-05-2019-12-05.png)
+
+![AllIPA](./SamplePlots/QueryTimes(SelectedQueries_ALL_IPASOnePlot)__ 2019-11-05-2019-12-05.png)
