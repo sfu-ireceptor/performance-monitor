@@ -4,23 +4,23 @@
 
 +-- ADC_API Performance 
 
-|   +-- begin-with-the-crazy-ideas.textile
+    |+-- begin-with-the-crazy-ideas.textile
 
-|   +-- on-simplicity-in-technology.markdown
+    |   +-- on-simplicity-in-technology.markdown
 
 +-- API_Performance_Scripts
 
-|   +-- DataProvenance
+    |   +-- DataProvenance
 
-|   +-- Performance
+    |   +-- Performance
 
 +-- .github/workflows
 
-|   +-- pythonapp.yml
+    |   +-- pythonapp.yml
 
-|   +-- pythonpackage.yml
+    |   +-- pythonpackage.yml
 
-|   +-- pythonpublish.yml
+    |   +-- pythonpublish.yml
 
 
 
