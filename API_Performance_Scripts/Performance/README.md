@@ -45,3 +45,6 @@ python3 plot_performance.py -h
      optional arguments:
         -h, --help     show this help message and exit
         -v, --verbose  Run the program in verbose mode.
+
+## Sample plots generated with plot performance script
+
