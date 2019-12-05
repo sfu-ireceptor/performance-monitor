@@ -2,7 +2,7 @@
 ######### AUTHOR: LAURA GUTIERREZ FUNDERBURK
 ######### SUPERVISOR: JAMIE SCOTT, FELIX BREDEN, BRIAN CORRIE
 ######### CREATED ON: MAY 20, 2019
-######### LAST MODIFIED ON: September 5, 2019
+######### LAST MODIFIED ON: November 29, 2019
 
 """
 
@@ -35,6 +35,10 @@ def getArguments():
     )
     # Output results directory
     parser.add_argument("path")
+    # Start Date
+    parser.add_argument("s_date")
+    # End date
+    parser.add_argument("e_date")
     # Verbosity flag
     parser.add_argument(
         "-v",
@@ -48,7 +52,7 @@ def getArguments():
         
 
 
-def plot_all_query_time(sub_queries,plot_name):
+def plot_all_query_time(sub_queries,plot_name,s_date,e_date):
 
     # Set seaborn style
     plt.style.use('seaborn-darkgrid')
@@ -83,7 +87,7 @@ def plot_all_query_time(sub_queries,plot_name):
         # Increment i by 1
             i +=1
         # Make the plot more readable - add title, legend, x,y labels 
-            plt.title("Time taken per query, \n" + str(plot_name) + " (IPA#" +str(xla) + ", \nhourly basis AUG 29 -  SEP 05(UTC))",fontsize=15)
+            plt.title("Time taken per query, \n" + str(plot_name) + " (IPA#" +str(xla) + ", \nhourly basis " + str(s_date) + "-" + str(e_date)  + "(UTC))",fontsize=15)
             plt.legend(bbox_to_anchor=(1, 1),bbox_transform=plt.gcf().transFigure)
             plt.ylabel("Time Query Took (seconds)",fontsize=15)
             plt.xlabel("Time",fontsize=15)
@@ -95,12 +99,12 @@ def plot_all_query_time(sub_queries,plot_name):
     # Tight layout to ensure all plots fit in the png file        
     plt.tight_layout()
     # Save figures in file
-    plt.savefig('QueryTimes(AllQueries_' + str(plot_name) + ')__Aug29_Sep05.png',dpi='figure')
+    plt.savefig('QueryTimes(AllQueries_' + str(plot_name) + ')__ '+ str(s_date) + '-' + str(e_date)  + '.png',dpi='figure')
     # Display figures in the screen 
     plt.show()
     
 
-def plot_stats_ipa_query(ipa_df,arr,option,ipa_name):
+def plot_stats_ipa_query(ipa_df,arr,option,ipa_name,s_date,e_date):
     """This function takes as input a dataframe with query times (either all_the_data, or all_ipa1,...,all_ipa5), 
     an array containing query names, and an integer 0 or 1, 0 to label accodring to queries, 1 to label according to ipa's"""
 
@@ -130,7 +134,7 @@ def plot_stats_ipa_query(ipa_df,arr,option,ipa_name):
         # Add legend - this can be changed manually 
         gh1.legend(pd4.columns.levels[option]);
 
-    fig.savefig('QueryTimes(SelectedQueries_' +str(ipa_name) + 'OnePlot)__Aug29_Sep05.png') 
+    fig.savefig('QueryTimes(SelectedQueries_' +str(ipa_name) + 'OnePlot)__ '+ str(s_date) + '-' + str(e_date)  + '.png') 
     plt.show() 
     
     
@@ -140,6 +144,8 @@ if __name__ == "__main__":
     
     
     path = options.path
+    s_date = options.s_date
+    e_date = options.e_date
 
     files = []
     # r=root, d=directories, f = files
@@ -147,22 +153,6 @@ if __name__ == "__main__":
         for file in f:
             if '.csv' in file:
                 files.append(os.path.join(r, file))
-
-
-#     new_header  =['','Date/Time','IPA#','NUMBERSAMPLES(TOTAL)','NUMBERSEQUENCES(TOTAL)','NUMBERSAMPLES(junction_aa=LLTL)','NUMBERSEQUENCES(junction_aa=LLTL)','TIME(junction_aa=LLTL)','NUMBERSAMPLES(junction_aa_length=9)','NUMBERSEQUENCES(junction_aa_length=9)','TIME(junction_aa_length=9)','NUMBERSAMPLES(junction_aa_length=15)','NUMBERSEQUENCES(junction_aa_length=15)','TIME(junction_aa_length=15)','NUMBERSAMPLES(v_call = IGHV1 f)','NUMBERSEQUENCES(v_call = IGHV1 f)','TIME(v_call = IGHV1 f)','NUMBERSAMPLES(v_call = IGHV1-69 g)','NUMBERSEQUENCES(v_call = IGHV1-69 g)','TIME(v_call = IGHV1-69 g)','NUMBERSAMPLES(v_call = IGHV1-18*01 a)','NUMBERSEQUENCES(v_call = IGHV1-18*01 a)','TIME(v_call = IGHV1-18*01 a)','NUMBERSAMPLES(v_call = TRBV20 f)','NUMBERSEQUENCES(v_call = TRBV20 f)','TIME(v_call = TRBV20 f)','NUMBERSAMPLES(v_call = TRBV20-1 g)','NUMBERSEQUENCES(v_call = TRBV20-1 g)','TIME(v_call = TRBV20-1 g)','NUMBERSAMPLES(v_call = TRBV20-1*01  a)','NUMBERSEQUENCES(v_call = TRBV20-1*01  a)','TIME(v_call = TRBV20-1*01  a)','NUMBERSAMPLES(d_call = IGHD1 f)','NUMBERSEQUENCES(d_call = IGHD1 f)','TIME(d_call = IGHD1 f)','NUMBERSAMPLES(d_call = IGHD1-1 g)','NUMBERSEQUENCES(d_call = IGHD1-1 g)','TIME(d_call = IGHD1-1 g)','NUMBERSAMPLES(d_call = IGHD1-1*01 a)','NUMBERSEQUENCES(d_call = IGHD1-1*01 a)','TIME(d_call = IGHD1-1*01 a)','NUMBERSAMPLES(d_call = TRBD1 f)','NUMBERSEQUENCES(d_call = TRBD1 f)','TIME(d_call = TRBD1 f)','NUMBERSAMPLES(d_call = TRBD1 g)','NUMBERSEQUENCES(d_call = TRBD1 g)','TIME(d_call = TRBD1 g)','NUMBERSAMPLES(d_call = TRBD1*01 a)','NUMBERSEQUENCES(d_call = TRBD1*01 a)','TIME(d_call = TRBD1*01 a)','NUMBERSAMPLES(j_call = IGHJ4 f)','NUMBERSEQUENCES(j_call = IGHJ4 f)','TIME(j_call = IGHJ4 f)','NUMBERSAMPLES(j_call = IGHJ4 g)','NUMBERSEQUENCES(j_call = IGHJ4 g)','TIME(j_call = IGHJ4 g)','NUMBERSAMPLES(j_call = IGHJ4*02 a)','NUMBERSEQUENCES(j_call = IGHJ4*02 a)','TIME(j_call = IGHJ4*02 a)','NUMBERSAMPLES(j_call = TRBJ2 f)','NUMBERSEQUENCES(j_call = TRBJ2 f)','TIME(j_call = TRBJ2 f)','NUMBERSAMPLES(j_call = TRBJ2-7 g)','NUMBERSEQUENCES(j_call = TRBJ2-7 g)','TIME(j_call = TRBJ2-7 g)','NUMBERSAMPLES(j_call = TRBJ2-7*01 a)','NUMBERSEQUENCES(j_call = TRBJ2-7*01 a)',"TIME(j_call = TRBJ2-7*01 a)"]
-
-#     all_dfs = []
-#     for i in range(len(files)):
-#         df = pd.read_csv(files[i],sep=',')
-#         #df.to_csv(files[i], header=new_header)
-
-
-#     files = []
-#     # r=root, d=directories, f = files
-#     for r, d, f in os.walk(path):
-#         for file in f:
-#             if '.csv' in file:
-#                 files.append(os.path.join(r, file))
 
     all_dfs = []
     for i in range(len(files)):
@@ -180,6 +170,8 @@ if __name__ == "__main__":
     all_the_data["Date/Time"]= all_data_right_times
     
     all_the_data = all_the_data.sort_values(by=['Date/Time'])
+    
+    all_the_data = all_the_data[(all_the_data["Date/Time"] > pd.Timestamp(str(s_date))) & (all_the_data["Date/Time"] < pd.Timestamp(str(e_date)))]
     
     allQueries = [item for item in all_the_data.columns if "TIME" in item]
     allQueries2 = [item for item in all_the_data.columns if "SEQUENCES" in item]
@@ -264,41 +256,11 @@ if __name__ == "__main__":
 
     plt.savefig('TotalSequenceSamplesALLIPAS.png')
     plt.show()
-
-    
-    #BOXPLOT
-    fig = plt.figure(figsize=(45,45))
-
-    for i in range(len(allQueries)):
-        plt.subplot(7, 3, i+1)
-        data = [all_ipa1[allQueries[i]],all_ipa2[allQueries[i]],all_ipa3[allQueries[i]],all_ipa4[allQueries[i]],all_ipa5[allQueries[i]]]
-        plt.boxplot(data);
-        plt.xlabel("IPA#")
-        plt.ylabel("Query time (seconds)")
-        plt.title("BoxPlot Query time (seconds) per IPA. \nQuery: " + str(allQueries[i]))
-    plt.savefig('BoxplotQueryTime(seconds)perIPA(ALLQUERIES)).png')
-    plt.show()
     
     # TIME SERIES (all queries, one plot per IPA)
-    
-    plot_all_query_time(allQueries,"all queries")
+    plot_all_query_time(allQueries,"all queries",s_date,e_date)
           
         
     # TIME SERIES (all ipas, one plot per query)
-    plot_stats_ipa_query(all_the_data,allQueries,1,"ALL_IPAS")
+    plot_stats_ipa_query(all_the_data,allQueries,1,"ALL_IPAS",s_date,e_date)
             
-#     for i in range(len(allQueries)):
-
-#     # Overwrite the label by calling the method.
-
-#         fig = plt.figure(figsize=(25,4))
-#         la_int = 150
-#         for xla in [1,2,3,4,5]:
-#             gh1 = fig.add_subplot(la_int + xla)
-#             for col,item in zip(['b', 'g', 'r', 'c','y'],[all_ipa1,all_ipa2,all_ipa3,all_ipa4,all_ipa5]):
-
-#                 pd.pivot_table(item, index='Date/Time', values= allQueries[i], aggfunc= [np.mean])\
-#                 .plot(color=col,ax=gh1,title="Average Daily Query Time All IPAs",label="IPA#" + str(xla)).legend(bbox_to_anchor=(0.8, 1.5))
-#                 labels = gh1.set_xticklabels(all_the_data["Date/Time"].values, rotation=90, fontsize=10)
-
-#         plt.show()
