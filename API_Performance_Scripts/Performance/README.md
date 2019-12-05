@@ -8,8 +8,7 @@
 python3 queries.py -h
 `
 
-`
-usage: queries.py [-h] [-v] output_dir ipa_arr
+`usage: queries.py [-h] [-v] output_dir ipa_arr
 
 positional arguments:
   output_dir     Indicate the full path to where performance test results will
