@@ -1,11 +1,9 @@
 #!/bin/bash
 
-######### PERFORMANCE TESTING BASH SCRIPT
-######### AUTHOR: LAURA GUTIERREZ FUNDERBURK
-######### SUPERVISOR: JAMIE SCOTT, FELIX BREDEN, BRIAN CORRIE
-######### CREATED ON: July 10
-######### LAST MODIFIED ON: July 10, 2019
-######### This script is to be run periodically to track query performance of production servers ipa1,ipa2,ipa3,ipa4,ipa5 
+# This script is to be run periodically to track query performance of production servers ipa1,ipa2,ipa3,ipa4,ipa5 
+#  using crontab -e (or other cronjob software)
+#  This script runs queries for a single service 
+#  Service example: https://ipa1.ireceptor.org/ 
 
 TIME1=`date +%Y-%m-%d_%H-%M-%S`
 
