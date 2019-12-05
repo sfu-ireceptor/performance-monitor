@@ -22,7 +22,7 @@ python3 queries.py -h
 
     ./run_queries.sh "https://ipa1.ireceptor.org,https://ipa2.ireceptor.org/,https://ipa3.ireceptor.org/"
 
-#### Scenario B: Simultaneus performance testing
+#### Scenario B: Simultaneous performance testing
     ./run_queries.sh "https://ipa1.ireceptor.org"
     ./run_queries.sh "https://ipa2.ireceptor.org/"
     ./run_queries.sh "https://ipa3.ireceptor.org/"
