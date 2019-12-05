@@ -3,11 +3,18 @@
 ## Directory Structure
 
     +-- ADC_API Performance 
-    |   +-- begin-with-the-crazy-ideas.textile
-    |   +-- on-simplicity-in-technology.markdown
+    |   +-- adc_api_performancetest.py
+    |   +-- curlairripa.py
+    |   +-- run_queries.sh
     +-- API_Performance_Scripts
     |   +-- DataProvenance
+    |       +-- productive_test.py	
+    |       +-- sequences.py
+    |       +-- service_IPA3_OddWords.sh
     |   +-- Performance
+    |       +-- plot_performance.py	
+    |       +-- queries.py	
+    |       +-- run_queries.sh
     +-- .github/workflows
     |   +-- pythonapp.yml
     |   +-- pythonpackage.yml
