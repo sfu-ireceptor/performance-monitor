@@ -13,9 +13,11 @@ def getArguments():
     )
 
     # Sequence file path
-    parser.add_argument("TSV_dir")
+    parser.add_argument("TSV_dir",
+                    help='Full path where TSV files are stored')
     # _id
-    parser.add_argument("_id")
+    parser.add_argument("_id", 
+                         help='Corresponds to value found in _id API iReceptor Service value')
     # Verbosity flag
     parser.add_argument(
         "-v",
