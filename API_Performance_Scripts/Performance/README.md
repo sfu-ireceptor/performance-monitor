@@ -11,8 +11,8 @@ python3 queries.py -h
     usage: queries.py [-h] [-v] output_dir ipa_arr
     
     positional arguments:
-        output_dir     Indicate the full path to where performance test results will be stored.
-        ipa_arr        Array containing URL to API server
+        output_dir     Indicate the full path to where performance test results will be stored
+        ipa_arr        Array containing URL to API service
 
     optional arguments:
        -h, --help     show this help message and exit
