@@ -17,6 +17,15 @@ python3 queries.py -h
     optional arguments:
        -h, --help     show this help message and exit
        -v, --verbose  Run the program in verbose mode.
+       
+#### Scenario A: Serial performance testing
+
+./run_queries.sh "https://ipa1.ireceptor.org,https://ipa2.ireceptor.org/,https://ipa3.ireceptor.org/"
+
+#### Scenario B: Simultaneus performance testing
+./run_queries.sh "https://ipa1.ireceptor.org"
+./run_queries.sh "https://ipa2.ireceptor.org/"
+./run_queries.sh "https://ipa3.ireceptor.org/"
 
 ## Stage 2: Generate plots from query results 
 
