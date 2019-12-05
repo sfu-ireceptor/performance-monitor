@@ -26,10 +26,9 @@ Open a command line, change directories to where the performance script is, and 
 
 `pip3 install -i https://test.pypi.org/simple/ curlairripa`
 
-Ensure the curlairripa.py file is on the same directory. 
+Ensure the curlairripa.py file is on the same directory where the adc_api_performancetest.py file is located. 
 
 To use modules in that library:
-
 
 `from curlairripa import *`
 
