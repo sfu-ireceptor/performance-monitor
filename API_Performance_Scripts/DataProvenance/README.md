@@ -4,7 +4,7 @@
 
 Test coverage: 
 
-- Measure how long it takes to complete full TSV download (all sequenced in a single sample)
+- Measure how long it takes to complete full TSV download (all sequences in a single sample)
 - Check TSV passes AIRR standards
 - Check for the presence of 'odd words' in v_call, d_call, j_call fields.  
 - Check locus equality (for a given sequence, first three characters in v_call, d_call, j_call coincide)
