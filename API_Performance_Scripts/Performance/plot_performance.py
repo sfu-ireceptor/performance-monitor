@@ -45,6 +45,12 @@ def getArguments():
         "--verbose",
         action="store_true",
         help="Run the program in verbose mode.")
+    # Unified scale flag
+    parser.add_argument(
+        "-s",
+        "--scale",
+        action="store_true",
+        help="Scale the graphs so they are all on the same y-axis scale.")
 
     # Parse the command line arguements.
     options = parser.parse_args()
@@ -52,7 +58,7 @@ def getArguments():
         
 
 
-def plot_all_query_time(sub_queries,plot_name,s_date,e_date):
+def plot_all_query_time(sub_queries,plot_name,s_date,e_date,scale):
 
     # Set seaborn style
     plt.style.use('seaborn-darkgrid')
@@ -69,6 +75,15 @@ def plot_all_query_time(sub_queries,plot_name,s_date,e_date):
     # Create subplots layout size - this will create 5 plots along the x axis
     la_int = 150
     
+    if scale:
+        graph_max = 0
+        for df,xla in zip([all_ipa1,all_ipa2,all_ipa3,all_ipa4,all_ipa5],[1,2,3,4,5]):
+            for item,c in zip(sub_queries,colors):
+                df_max = max(df[item])
+                if df_max > graph_max:
+                    graph_max = df_max
+        print(graph_max)
+
     # Iterate over subdataframes containing query time data for IPA1-IPA5
     for df,xla in zip([all_ipa1,all_ipa2,all_ipa3,all_ipa4,all_ipa5],[1,2,3,4,5]):
     # Indicate which subplot to focus on
@@ -95,6 +110,8 @@ def plot_all_query_time(sub_queries,plot_name,s_date,e_date):
             start, end = plt.xlim()
             stepsize=1
             plt.xticks(np.arange(start, end, stepsize))
+            if scale:
+                plt.yticks(np.arange(0, graph_max, int(graph_max/10)))
 
     # Tight layout to ensure all plots fit in the png file        
     plt.tight_layout()
@@ -104,7 +121,7 @@ def plot_all_query_time(sub_queries,plot_name,s_date,e_date):
     plt.show()
     
 
-def plot_stats_ipa_query(ipa_df,arr,option,ipa_name,s_date,e_date):
+def plot_stats_ipa_query(ipa_df,arr,option,ipa_name,s_date,e_date,scale):
     """This function takes as input a dataframe with query times (either all_the_data, or all_ipa1,...,all_ipa5), 
     an array containing query names, and an integer 0 or 1, 0 to label accodring to queries, 1 to label according to ipa's"""
 
@@ -258,9 +275,9 @@ if __name__ == "__main__":
     plt.show()
     
     # TIME SERIES (all queries, one plot per IPA)
-    plot_all_query_time(allQueries,"all queries",s_date,e_date)
+    plot_all_query_time(allQueries,"all queries",s_date,e_date, options.scale)
           
         
     # TIME SERIES (all ipas, one plot per query)
-    plot_stats_ipa_query(all_the_data,allQueries,1,"ALL_IPAS",s_date,e_date)
+    plot_stats_ipa_query(all_the_data,allQueries,1,"ALL_IPAS",s_date,e_date, options.scale)
             
