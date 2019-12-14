@@ -75,6 +75,9 @@ def plot_all_query_time(sub_queries,plot_name,s_date,e_date,scale):
     # Create subplots layout size - this will create 5 plots along the x axis
     la_int = 150
     
+    # If the scale flag is set, calculate the maximum value across all the time
+    # series in all of the data frames. This allows us to plot the graphs on the
+    # same scale so we can compare the IPAs relative to each other.
     if scale:
         graph_max = 0
         for df,xla in zip([all_ipa1,all_ipa2,all_ipa3,all_ipa4,all_ipa5],[1,2,3,4,5]):
@@ -82,7 +85,6 @@ def plot_all_query_time(sub_queries,plot_name,s_date,e_date,scale):
                 df_max = max(df[item])
                 if df_max > graph_max:
                     graph_max = df_max
-        print(graph_max)
 
     # Iterate over subdataframes containing query time data for IPA1-IPA5
     for df,xla in zip([all_ipa1,all_ipa2,all_ipa3,all_ipa4,all_ipa5],[1,2,3,4,5]):
@@ -110,6 +112,7 @@ def plot_all_query_time(sub_queries,plot_name,s_date,e_date,scale):
             start, end = plt.xlim()
             stepsize=1
             plt.xticks(np.arange(start, end, stepsize))
+            # If we want to scale the y axis, do so...
             if scale:
                 plt.yticks(np.arange(0, graph_max, int(graph_max/10)))
 
