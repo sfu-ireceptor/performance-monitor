@@ -156,7 +156,20 @@ def plot_stats_ipa_query(ipa_df,arr,option,ipa_name,s_date,e_date,scale):
 
     fig.savefig('QueryTimes(SelectedQueries_' +str(ipa_name) + 'OnePlot)__ '+ str(s_date) + '-' + str(e_date)  + '.png') 
     plt.show() 
+   
+def plot_query(query_name):
+    """This function plots a given query, all services"""
     
+    plt.figure(figsize=(19,10))
+    for item,label in zip([all_ipa1,all_ipa2,all_ipa3,all_ipa4,all_ipa5],["IPA1","IPA2","IPA3","IPA4","IPA5"]):
+        plt.plot(item["Date/Time"], item[query_name],label=label);
+        plt.legend(loc="upper left")
+    plt.grid(True)
+    plt.title(str(query_name) + ", All Services",fontsize=15)
+    plt.legend(loc="upper left")
+    plt.xlabel("Date/Time",fontsize=12)
+    plt.ylabel("Query time (functional=1)",fontsize=12);
+    plt.savefig(query_name + "allservices")
     
 if __name__ == "__main__":
     
