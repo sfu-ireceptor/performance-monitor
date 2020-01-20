@@ -2,7 +2,7 @@
 ######### AUTHOR: LAURA GUTIERREZ FUNDERBURK
 ######### SUPERVISOR: JAMIE SCOTT, FELIX BREDEN, BRIAN CORRIE
 ######### CREATED ON: MAY 20, 2019
-######### LAST MODIFIED ON: November 29, 2019
+######### LAST MODIFIED ON: January 19, 2020
 
 """
 
@@ -56,7 +56,25 @@ def getArguments():
     options = parser.parse_args()
     return options       
         
+def plot_query(query_name):
+    """This function plots a given query, all services"""
+    
+    # Initialize figure
+    plt.figure(figsize=(19,10))
+    
+    # Iterate over each service query results, and append the appropriate service label
+    for item,label in zip([all_ipa1,all_ipa2,all_ipa3,all_ipa4,all_ipa5],["IPA1","IPA2","IPA3","IPA4","IPA5"]):
+        # Plot query time, for a given query 
+        plt.plot(item["Date/Time"], item[query_name],label=label);
 
+    # Improve plot readability - add grid, title, legend, x and y labels
+    plt.grid(True)
+    plt.title(str(query_name) + ", All Services",fontsize=15)
+    plt.legend(loc="upper left")
+    plt.xlabel("Date/Time",fontsize=12)
+    plt.ylabel("Query time (functional=1)",fontsize=12);
+    # Save image into file
+    plt.savefig(query_name + "allservices.png")
 
 def plot_all_query_time(sub_queries,plot_name,s_date,e_date,scale):
 
@@ -116,8 +134,6 @@ def plot_all_query_time(sub_queries,plot_name,s_date,e_date,scale):
             if scale:
                 plt.yticks(np.arange(0, graph_max, int(graph_max/10)))
 
-    # Tight layout to ensure all plots fit in the png file        
-    plt.tight_layout()
     # Save figures in file
     plt.savefig('QueryTimes(AllQueries_' + str(plot_name) + ')__ '+ str(s_date) + '-' + str(e_date)  + '.png',dpi='figure')
     # Display figures in the screen 
@@ -156,20 +172,6 @@ def plot_stats_ipa_query(ipa_df,arr,option,ipa_name,s_date,e_date,scale):
 
     fig.savefig('QueryTimes(SelectedQueries_' +str(ipa_name) + 'OnePlot)__ '+ str(s_date) + '-' + str(e_date)  + '.png') 
     plt.show() 
-   
-def plot_query(query_name):
-    """This function plots a given query, all services"""
-    
-    plt.figure(figsize=(19,10))
-    for item,label in zip([all_ipa1,all_ipa2,all_ipa3,all_ipa4,all_ipa5],["IPA1","IPA2","IPA3","IPA4","IPA5"]):
-        plt.plot(item["Date/Time"], item[query_name],label=label);
-        plt.legend(loc="upper left")
-    plt.grid(True)
-    plt.title(str(query_name) + ", All Services",fontsize=15)
-    plt.legend(loc="upper left")
-    plt.xlabel("Date/Time",fontsize=12)
-    plt.ylabel("Query time (functional=1)",fontsize=12);
-    plt.savefig(query_name + "allservices")
     
 if __name__ == "__main__":
     
