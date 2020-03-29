@@ -128,7 +128,7 @@ def plot_all_query_time(sub_queries,plot_name,s_date,e_date,scale):
             plt.xlabel("Time",fontsize=15)
             plt.xticks(rotation=90)
             start, end = plt.xlim()
-            stepsize=1
+            stepsize=2
             plt.xticks(np.arange(start, end, stepsize))
             # If we want to scale the y axis, do so...
             if scale:
