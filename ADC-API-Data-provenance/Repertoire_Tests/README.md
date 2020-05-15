@@ -35,6 +35,20 @@
 
      python3 AIRR-repertoire-checks.py "./MappingFiles/AIRR-iReceptorMapping-latest.txt" "https://ipa1.ireceptor.org" "repertoire" "./JSON-Files/repertoire/PRJNA493983_ipa5.json" "./MetadataFiles/master_metadata_UTF-latest.csv" "PRJEB9332" "./JSON-Files/facet_queries_for_sanity_tests/ipa1/PRJEB9332/" "./annotation/" "./ExtraFeedback/" "CC-FC-AT"
 
+## curlairripa Python Package 
+
+Open a command line, change directories to where the performance script is, and enter the following command
+
+`pip3 install -i https://test.pypi.org/simple/ curlairripa`
+
+Ensure the curlairripa.py file is on the same directory where the adc_api_performancetest.py file is located. 
+
+To use modules in that library:
+
+`from curlairripa import *`
+
+To see more information on the curlairripa Python package, go to [https://test.pypi.org/project/curlairripa/](https://test.pypi.org/project/curlairripa/)
+
 ### Study_id in each service
 ##### IPA1 
 
@@ -74,3 +88,4 @@
 
      'PRJNA381394', 
      'PRJNA493983'
+
