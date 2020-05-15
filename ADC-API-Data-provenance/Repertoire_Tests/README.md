@@ -1,29 +1,39 @@
 
 ### Running the script
-
      DATA PROVENANCE TEST 
 
      usage: AIRR-repertoire-checks.py [-h] [-v]
                                       mapping_file base_url entry_point json_files
-                                      master_md study_id
+                                      master_md study_id facet_count annotation_dir
+                                      details_dir Coverage
 
      positional arguments:
-       mapping_file   Indicate the full path to where the mapping file is found
-       base_url       String containing URL to API server (e.g. https://airr-
-                      api2.ireceptor.org)
-       entry_point    Options: string 'rearragement' or string 'repertoire'
-       json_files     Enter full path to JSON queries - repertoire check uses attached no_filters.json
-       master_md      Full path to master metadata
-       study_id       Study ID
+       mapping_file    Indicate the full path to where the mapping file is found
+       base_url        String containing URL to API server (e.g. https://airr-
+                       api2.ireceptor.org)
+       entry_point     Options: string 'rearragement' or string 'repertoire'
+       json_files      Enter full path to JSON query containing repertoire ID's for
+                       a given study - this must match the value given for study_id
+       master_md       Full path to master metadata
+       study_id        Study ID (study_id) associated to this study
+       facet_count     Enter full path to JSON queries containing facet count
+                       request for each repertoire
+       annotation_dir  Enter full path to where annotation files associated with
+                       study_id
+       details_dir     Enter full path where you'd like to store content feedback
+                       in CSV format
+       Coverage        Sanity check levels: enter CC for content comparison, enter
+                       FC for facet count vs ir_curator count test, enter AT for
+                       AIRR type test
 
      optional arguments:
-       -h, --help     show this help message and exit
-       -v, --verbose  Run the program in verbose mode.
+       -h, --help      show this help message and exit
+       -v, --verbose   Run the program in verbose mode.
 
 
 ### Example
 
-     python3 AIRR-repertoire-checks.py "./AIRR-iReceptorMapping-v1.3-2020-01-16.txt" 'https://ipa4-staging.ireceptor.org/' 'repertoire' "./nofilters.json" "./master_metadata_2019-09-17.xlsx" "PRJNA325416"
+     python3 AIRR-repertoire-checks.py "./MappingFiles/AIRR-iReceptorMapping-latest.txt" "https://ipa1.ireceptor.org" "repertoire" "./JSON-Files/repertoire/PRJNA493983_ipa5.json" "./MetadataFiles/master_metadata_UTF-latest.csv" "PRJEB9332" "./JSON-Files/facet_queries_for_sanity_tests/ipa1/PRJEB9332/" "./annotation/" "./ExtraFeedback/" "CC-FC-AT"
 
 ### Study_id in each service
 ##### IPA1 
