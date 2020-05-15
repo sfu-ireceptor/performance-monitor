@@ -24,3 +24,17 @@
 ### Example
 
      python3 adc_api_datatest.py "./ADC-API/output/ipa1/" "Musmus" "http://ipa1.ireceptor.org" "rearrangement" "./ADC-API/JSON-Files/ipa1/PRJEB1289_repertoire_id_10.json 10
+     
+## curlairripa Python Package 
+
+Open a command line, change directories to where the performance script is, and enter the following command
+
+`pip3 install -i https://test.pypi.org/simple/ curlairripa`
+
+Ensure the curlairripa.py file is on the same directory where the adc_api_performancetest.py file is located. 
+
+To use modules in that library:
+
+`from curlairripa import *`
+
+To see more information on the curlairripa Python package, go to [https://test.pypi.org/project/curlairripa/](https://test.pypi.org/project/curlairripa/)
