@@ -2,8 +2,7 @@
 ######### AUTHOR: LAURA GUTIERREZ FUNDERBURK
 ######### SUPERVISOR: JAMIE SCOTT, FELIX BREDEN, BRIAN CORRIE
 ######### CREATED ON: MAY 20, 2019
-######### LAST MODIFIED ON: November 29, 2019
-
+######### LAST MODIFIED ON: March 29, 2020
 """
 
 Description: this script takes as input a set of .csv files containing performance query results and it outputs a series of plots comparing hourly time taken to finish query
@@ -25,7 +24,7 @@ from matplotlib.pyplot import figure
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
-global all_ipa1,all_ipa2,all_ipa3,all_ipa4,all_ipa5,all_the_data
+global all_ipa1,all_ipa2,all_ipa3,all_ipa4,all_ipa5,gold_ipa,all_the_data
 
 def getArguments():
     # Set up the command line parser
@@ -56,7 +55,25 @@ def getArguments():
     options = parser.parse_args()
     return options       
         
+def plot_query(query_name):
+    """This function plots a given query, all services"""
+    
+    # Initialize figure
+    plt.figure(figsize=(19,10))
+    
+    # Iterate over each service query results, and append the appropriate service label
+    for item,label in zip([all_ipa1,all_ipa2,all_ipa3,all_ipa4,all_ipa5,gold_ipa],["IPA1","IPA2","IPA3","IPA4","IPA5","airr-gold"]):
+        # Plot query time, for a given query 
+        plt.plot(item["Date/Time"], item[query_name],label=label);
 
+    # Improve plot readability - add grid, title, legend, x and y labels
+    plt.grid(True)
+    plt.title(str(query_name) + ", All Services",fontsize=15)
+    plt.legend(loc="upper left")
+    plt.xlabel("Date/Time",fontsize=12)
+    plt.ylabel("Query time (functional=1)",fontsize=12);
+    # Save image into file
+    plt.savefig(query_name + "allservices.png")
 
 def plot_all_query_time(sub_queries,plot_name,s_date,e_date,scale):
 
@@ -73,21 +90,21 @@ def plot_all_query_time(sub_queries,plot_name,s_date,e_date,scale):
     # Initialize figure
     fig = plt.figure(figsize=(25,10))
     # Create subplots layout size - this will create 5 plots along the x axis
-    la_int = 150
+    la_int = 160
     
     # If the scale flag is set, calculate the maximum value across all the time
     # series in all of the data frames. This allows us to plot the graphs on the
     # same scale so we can compare the IPAs relative to each other.
     if scale:
         graph_max = 0
-        for df,xla in zip([all_ipa1,all_ipa2,all_ipa3,all_ipa4,all_ipa5],[1,2,3,4,5]):
+        for df,xla in zip([all_ipa1,all_ipa2,all_ipa3,all_ipa4,all_ipa5,gold_ipa],[1,2,3,4,5,6]):
             for item,c in zip(sub_queries,colors):
                 df_max = max(df[item])
                 if df_max > graph_max:
                     graph_max = df_max
 
     # Iterate over subdataframes containing query time data for IPA1-IPA5
-    for df,xla in zip([all_ipa1,all_ipa2,all_ipa3,all_ipa4,all_ipa5],[1,2,3,4,5]):
+    for df,xla in zip([all_ipa1,all_ipa2,all_ipa3,all_ipa4,all_ipa5,gold_ipa],[1,2,3,4,5,6]):
     # Indicate which subplot to focus on
         gh1 = fig.add_subplot(la_int + xla)
     
@@ -104,20 +121,22 @@ def plot_all_query_time(sub_queries,plot_name,s_date,e_date,scale):
         # Increment i by 1
             i +=1
         # Make the plot more readable - add title, legend, x,y labels 
-            plt.title("Time taken per query, \n" + str(plot_name) + " (IPA#" +str(xla) + ", \nhourly basis " + str(s_date) + "-" + str(e_date)  + "(UTC))",fontsize=15)
+            ipa_nr = df["IPA#"].unique()[0]
+            plt.title("Time taken per query, \n" + str(plot_name) + " " + str(ipa_nr) + ", \nhourly basis\n " + str(s_date) + "-" + str(e_date)  + "(UTC))",fontsize=15)
             plt.legend(bbox_to_anchor=(1, 1),bbox_transform=plt.gcf().transFigure)
             plt.ylabel("Time Query Took (seconds)",fontsize=15)
             plt.xlabel("Time",fontsize=15)
             plt.xticks(rotation=90)
             start, end = plt.xlim()
-            stepsize=1
+            stepsize=2
             plt.xticks(np.arange(start, end, stepsize))
             # If we want to scale the y axis, do so...
             if scale:
                 plt.yticks(np.arange(0, graph_max, int(graph_max/10)))
-
-    # Tight layout to ensure all plots fit in the png file        
-    plt.tight_layout()
+            fixed=True
+            if fixed:
+                plt.ylim(0, 500)
+                plt.yticks(np.arange(0,500,int(500/10)))
     # Save figures in file
     plt.savefig('QueryTimes(AllQueries_' + str(plot_name) + ')__ '+ str(s_date) + '-' + str(e_date)  + '.png',dpi='figure')
     # Display figures in the screen 
@@ -134,7 +153,7 @@ def plot_stats_ipa_query(ipa_df,arr,option,ipa_name,s_date,e_date,scale):
     la_int = 180
 
         # One plot per iteration
-    for i in range(1,8):
+    for i in range(1,9):
 
         # Indicate subplot to focus on
         gh1 = fig.add_subplot(la_int + i)
@@ -144,11 +163,15 @@ def plot_stats_ipa_query(ipa_df,arr,option,ipa_name,s_date,e_date,scale):
         # Remove empty entries - this occurs when parsing a batch that has not been finalized - usually at the last line of the dataframe
         pd4 = pd3.dropna()
         # Set 5 colours - one for each IPA (if you do a single ipa dataset, it will use the first 3)
-        my_colors = ['b', 'g', 'r', 'c', 'm']*3#'y', 'k', 'w']*3 
+        my_colors = ['b', 'g', 'r', 'c', 'm','y']*3#'y', 'k', 'w']*3 
         # Get levels for a more appropriate legend name
         queries= pd4.columns.levels[0]
-        # Query names
-        name = queries[0] + ",\n "+  queries[1] + ",\n " + queries[2]
+        if i<8:
+            # Query names
+            name = queries[0] + ",\n "+  queries[1] + ",\n " + queries[2]
+        else:
+            # Query names
+            name = queries[0] + ",\n "+  queries[1] 
         # Use plot method to generate figure 
         pd4.plot(figsize=(30,8),color=my_colors,ax=gh1,title='Query time (seconds) - ' + str(ipa_name)+ '\n Selected Queries:\n ' + name).legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         # Add legend - this can be changed manually 
@@ -156,7 +179,6 @@ def plot_stats_ipa_query(ipa_df,arr,option,ipa_name,s_date,e_date,scale):
 
     fig.savefig('QueryTimes(SelectedQueries_' +str(ipa_name) + 'OnePlot)__ '+ str(s_date) + '-' + str(e_date)  + '.png') 
     plt.show() 
-    
     
 if __name__ == "__main__":
     
@@ -206,8 +228,8 @@ if __name__ == "__main__":
     all_ipa3 = all_the_data[all_the_data["IPA#"]=="ipa3"]
     all_ipa4 = all_the_data[all_the_data["IPA#"]=="ipa4"]
     all_ipa5 = all_the_data[all_the_data["IPA#"]=="ipa5"]
+    gold_ipa = all_the_data[all_the_data["IPA#"]=="airr-gold"]
 
-    
     v_calls = ['TIME(v_call = IGHV1 f)',
      'TIME(v_call = IGHV1-69 g)',
      'TIME(v_call = IGHV1-18*01 a)',
@@ -234,19 +256,21 @@ if __name__ == "__main__":
     num_seq_tot_ipa3 = max(all_ipa3["NUMBERSEQUENCES(TOTAL)"].unique())
     num_seq_tot_ipa4 = max(all_ipa4["NUMBERSEQUENCES(TOTAL)"].unique())
     num_seq_tot_ipa5 = max(all_ipa5["NUMBERSEQUENCES(TOTAL)"].unique())
+    num_seq_tot_gold = max(gold_ipa["NUMBERSEQUENCES(TOTAL)"].unique())
 
     num_sam_tot_ipa1 = max(all_ipa1["NUMBERSAMPLES(TOTAL)"].unique())
     num_sam_tot_ipa2 = max(all_ipa2["NUMBERSAMPLES(TOTAL)"].unique())
     num_sam_tot_ipa3 = max(all_ipa3["NUMBERSAMPLES(TOTAL)"].unique())
     num_sam_tot_ipa4 = max(all_ipa4["NUMBERSAMPLES(TOTAL)"].unique())
     num_sam_tot_ipa5 = max(all_ipa5["NUMBERSAMPLES(TOTAL)"].unique())
+    num_sam_tot_gold = max(gold_ipa["NUMBERSAMPLES(TOTAL)"].unique())
 
 
-    labels = 'IPA1', 'IPA2', 'IPA3', 'IPA4', 'IPA5'
-    sequences = [num_seq_tot_ipa1,num_seq_tot_ipa2,num_seq_tot_ipa3,num_seq_tot_ipa4,num_seq_tot_ipa5]
-    samples = [num_sam_tot_ipa1,num_sam_tot_ipa2,num_sam_tot_ipa3,num_sam_tot_ipa4,num_sam_tot_ipa5]
-    explode_seq = (0, 0, 0, 0,0.1)  
-    explode_sam = (0.1, 0, 0, 0,0)  
+    labels = 'IPA1', 'IPA2', 'IPA3', 'IPA4', 'IPA5','airr-gold'
+    sequences = [num_seq_tot_ipa1,num_seq_tot_ipa2,num_seq_tot_ipa3,num_seq_tot_ipa4,num_seq_tot_ipa5,num_seq_tot_gold]
+    samples = [num_sam_tot_ipa1,num_sam_tot_ipa2,num_sam_tot_ipa3,num_sam_tot_ipa4,num_sam_tot_ipa5,num_sam_tot_gold]
+    explode_seq = (0, 0, 0, 0,0,0.1)  
+    explode_sam = (0.1, 0, 0, 0,0,0)  
 
     #fig1, ax1 = plt.subplots(figsize=(10,10))
     fig, (ax1, ax2) = plt.subplots(1, 2,figsize=(10,6))
@@ -264,6 +288,7 @@ if __name__ == "__main__":
     plt.show()
     
     x = ["IPA" + str(i) for i in range(1,6)]
+    x.append("airr-gold")
     fig1, (ax3,ax4) = plt.subplots(1,2,figsize=(10,6))
     fig1.suptitle("Total number of sequences (left)\n and samples (right) per IPA\n",fontsize=20)
     ax3.set_xlabel("IPA Number")
