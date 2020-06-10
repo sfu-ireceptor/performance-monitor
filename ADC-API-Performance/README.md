@@ -2,6 +2,8 @@
 
 ## ADC API Performance Testing Script 
 
+This script performs queries
+
 #### Usage
 
 `python3 adc_api_performancetest.py -h
@@ -19,6 +21,24 @@
     optional arguments:
       -h, --help     show this help message and exit
       -v, --verbose  Run the program in verbose mode.
+      
+## ADC API Performance Plotting Script 
+
+This script plots performance test results from the queries obtained using the script above.
+
+#### Usage
+
+    usage: adc_api_plot_performance.py [-h] [-v] [-s] path s_date e_date
+
+    positional arguments:
+      path
+      s_date
+      e_date
+
+    optional arguments:
+      -h, --help     show this help message and exit
+      -v, --verbose  Run the program in verbose mode.
+      -s, --scale    Scale the graphs so they are all on the same y-axis scale.
 
 ## curlairripa Python Package 
 

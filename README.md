@@ -1,26 +1,30 @@
-# Performance Testing and Data Provenance Scripts 
+# performance-monitor
+Scripts to monitor the performance of the AIRR Data Commons
 
-This repository contains several python and shell scripts that perform data provenance checks on iReceptor API services, as well as performance tests on iReceptor API services and ADC API services. 
+# Performance Testing and Data Provenance Scripts 	
 
-## Directory Structure
+This repository contains several python and shell scripts that perform data provenance checks on iReceptor API services, as well as performance tests on iReceptor API services and ADC API services. 	
 
-    +-- ADC_API Performance 
-    |   +-- adc_api_performancetest.py
-    |   +-- curlairripa.py
-    |   +-- run_queries.sh
-    +-- API_Performance_Scripts
-    |   +-- DataProvenance
-    |       +-- productive_test.py	
-    |       +-- sequences.py
-    |       +-- service_IPA3_OddWords.sh
-    |   +-- Performance
-    |       +-- plot_performance.py	
-    |       +-- queries.py	
-    |       +-- run_queries.sh
- 
-## Requirements
+## Directory Structure	
 
-Python 3.5 or higher. 
+    ├── ADC-API-Data-provenance
+    │   ├── Rearrangement_Tests
+    │   └── Repertoire_Tests
+    ├── ADC-API-Performance
+    ├── API_Performance_Scripts
+    │   ├── DataProvenance
+    │   ├── Performance
+    ├── LICENSE
+    ├── PLOTS
+    │   ├── ADC-API
+    │   └── IPA1-IPA2-IPA3-IPA4-IPA5
+    ├── README.md
+    └── requirements.txt
+
+
+## Requirements	
+
+Python 3.5 or higher. 	
 
 
 
