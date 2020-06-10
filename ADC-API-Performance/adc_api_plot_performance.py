@@ -86,7 +86,7 @@ if __name__ == "__main__":
     for i in range(len(files)):
         #print(files[i])
         df = pd.read_csv(files[i],sep=',')
-        df["IPA#"] = files[i].split("-")[-2]
+        df["IPA#"] = files[i].split("/")[2].split(".ireceptor.org.csv")[0].split("_")[-1]
         all_dfs.append(df)
         
     all_the_data = pd.concat([all_dfs[i] for i in range(len(files))],sort=False)
@@ -109,11 +109,11 @@ if __name__ == "__main__":
     gene_calls = [item for item in allQueries if "g" in item]
     allele_calls = [item for item in allQueries if "a" in item]
     
-    all_ipa1 = all_the_data[all_the_data["IPA#"]=="staging_ipa1"]
-    all_ipa2 = all_the_data[all_the_data["IPA#"]=="staging_ipa2"]
-    all_ipa3 = all_the_data[all_the_data["IPA#"]=="staging_ipa3"]
-    all_ipa4 = all_the_data[all_the_data["IPA#"]=="staging_ipa4"]
-    all_ipa5 = all_the_data[all_the_data["IPA#"]=="ipa5_airr"]
+    all_ipa1 = all_the_data[(all_the_data["IPA#"]=="ipa1-staging") | (all_the_data["IPA#"]=="ipa1")]
+    all_ipa2 = all_the_data[(all_the_data["IPA#"]=="ipa2-staging") | (all_the_data["IPA#"]=="ipa2")]
+    all_ipa3 = all_the_data[(all_the_data["IPA#"]=="ipa3-staging") | (all_the_data["IPA#"]=="ipa3")]
+    all_ipa4 = all_the_data[(all_the_data["IPA#"]=="ipa4-staging") | (all_the_data["IPA#"]=="ipa4")]
+    all_ipa5 = all_the_data[(all_the_data["IPA#"]=="airr-ipa5") | (all_the_data["IPA#"]=="ipa5")]
     gold_ipa = all_the_data[all_the_data["IPA#"]=="ipa5_airr"]
     
     t1 = all_ipa1[["filters.content.field","filters.content.value","TimeTaken(s)","Date/TimeConverted"]]
@@ -151,5 +151,5 @@ if __name__ == "__main__":
            y="TimeTaken(s)",
            x="filters.content.field: filters.content.value",
                   marginal_x="rug", marginal_y="histogram",template="plotly_dark",facet_col="Service")
-    pio.write_html(hmap,"HMAP_ADC_API_performance " + str(s_date) + " " + str(e_date) + ".html",
+    pio.write_html(hmap,"HMAP_ADC_API_performance_" + str(s_date) + "_" + str(e_date) + ".html",
               auto_open=True)
