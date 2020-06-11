@@ -2,7 +2,11 @@
 ######### AUTHOR: LAURA GUTIERREZ FUNDERBURK
 ######### SUPERVISOR: JAMIE SCOTT, FELIX BREDEN, BRIAN CORRIE
 ######### CREATED ON: MAY 20, 2019
+<<<<<<< HEAD
+######### LAST MODIFIED ON: March 29, 2020
+=======
 ######### LAST MODIFIED ON: February 12, 2020
+>>>>>>> 4bc1d60494ef7705fbf5820608662ecc85ed36de
 """
 
 Description: this script takes as input a set of .csv files containing performance query results and it outputs a series of plots comparing hourly time taken to finish query
@@ -133,7 +137,14 @@ def plot_all_query_time(sub_queries,plot_name,s_date,e_date,scale):
             # If we want to scale the y axis, do so...
             if scale:
                 plt.yticks(np.arange(0, graph_max, int(graph_max/10)))
+<<<<<<< HEAD
+            fixed=True
+            if fixed:
+                plt.ylim(0, 500)
+                plt.yticks(np.arange(0,500,int(500/10)))
+=======
 
+>>>>>>> 4bc1d60494ef7705fbf5820608662ecc85ed36de
     # Save figures in file
     plt.savefig('QueryTimes(AllQueries_' + str(plot_name) + ')__ '+ str(s_date) + '-' + str(e_date)  + '.png',dpi='figure')
     # Display figures in the screen 
