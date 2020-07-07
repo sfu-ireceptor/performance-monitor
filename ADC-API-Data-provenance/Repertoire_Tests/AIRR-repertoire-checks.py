@@ -2,7 +2,7 @@
 ######### AUTHOR: LAURA GUTIERREZ FUNDERBURK
 ######### SUPERVISOR: JAMIE SCOTT, FELIX BREDEN, BRIAN CORRIE
 ######### CREATED ON: December 5 2019
-######### LAST MODIFIED ON: May 14 2020
+######### LAST MODIFIED ON: June 2 2020
 
 """
 Use
@@ -100,65 +100,29 @@ def get_metadata_sheet(master_metadata_file):
 
 def flatten_json(DATA):
     
-    data_pro = json_normalize(data=DATA['Repertoire'], record_path='data_processing')
+    data_pro = pd.json_normalize(data=DATA['Repertoire'], record_path='data_processing')
     data_pro = rename_cols(data_pro,"data_processing")
     
-    sample = json_normalize(data=DATA['Repertoire'], record_path='sample')
+    sample = pd.json_normalize(data=DATA['Repertoire'], record_path='sample')
     sample = rename_cols(sample,"sample")
      
-    #display(sample)
-    
-    
-    sample_0_cell_subset_value = [item['value'] for item in sample['sample.0.cell_subset'].to_list()]
-    sample_0_cell_subset_id = [item['id'] for item in sample['sample.0.cell_subset'].to_list()]
-    sample_0_cell_species_value = [item['value'] for item in sample['sample.0.cell_species'].to_list()]
-    sample_0_cell_species_id = [item['id'] for item in sample['sample.0.cell_species'].to_list()]
-    cell_subset_species_dic = pd.DataFrame({'sample.0.cell_subset.value':sample_0_cell_subset_value,'sample.0.cell_subset.id':sample_0_cell_subset_id,\
-                                           'sample.0.cell_species.value':sample_0_cell_species_value,"sample.0.cell_species.id":sample_0_cell_species_id})
 
 
-    sample_0_sequencing_files_ft = [item['file_type'] for item in sample['sample.0.sequencing_files'].to_list()]
-    sample_0_sequencing_files_fn = [item['filename'] for item in sample['sample.0.sequencing_files'].to_list()]
-    sample_0_sequencing_files_pf = [item['paired_filename'] for item in sample['sample.0.sequencing_files'].to_list()]
-    sample_0_sequencing_files_prd = [item['paired_read_direction'] for item in sample['sample.0.sequencing_files'].to_list()]
-    sample_0_sequencing_files_lg = [item['paired_read_length'] for item in sample['sample.0.sequencing_files'].to_list()]
-    sample_0_sequencing_files_rd = [item['read_direction'] for item in sample['sample.0.sequencing_files'].to_list()]
-    sample_0_sequencing_files_rl = [item['read_length'] for item in sample['sample.0.sequencing_files'].to_list()]
-
-
-    sample_0_sequencing_files_dic = pd.DataFrame({'sample.0.sequencing_files.file_type':sample_0_sequencing_files_ft,
-                                                 'sample.0.sequencing_files.filename':sample_0_sequencing_files_fn,
-                                                 'sample.0.sequencing_files.paired_filename':sample_0_sequencing_files_pf,
-                                                 'sample.0.sequencing_files.paired_read_direction':sample_0_sequencing_files_prd,
-                                                 'sample.0.sequencing_files.paired_read_length':sample_0_sequencing_files_lg,
-                                                 'sample.0.sequencing_files.read_direction':sample_0_sequencing_files_rd,
-                                                 'sample.0.sequencing_files.read_length':sample_0_sequencing_files_rl})
-
-    pcr_target = json_normalize(DATA["Repertoire"],record_path=['sample','pcr_target'])
+    pcr_target = pd.json_normalize(DATA["Repertoire"],record_path=['sample','pcr_target'])
     pcr_target = rename_cols(pcr_target,"sample.0.pcr_target")
 
-    subject = json_normalize(data=DATA['Repertoire'], record_path=["subject","diagnosis"])
+    subject = pd.json_normalize(data=DATA['Repertoire'], record_path=["subject","diagnosis"])
     subject = rename_cols(subject,"subject.diagnosis")
-    disease_diagnosis_value = [item["value"] for item in subject["subject.diagnosis.0.disease_diagnosis"]]
-    disease_diagnosis_id = [item["id"] for item in subject["subject.diagnosis.0.disease_diagnosis"]]
 
-    sample_tissue_value = [item["value"] for item in sample["sample.0.tissue"]]
-    sample_tissue_id = [item["id"] for item in sample["sample.0.tissue"]]
-
-    sample_tissue_dic = pd.DataFrame({"sample.0.tissue.value":sample_tissue_value,"sample.0.tissue.id":sample_tissue_id})
-
-    disease_diag_dic = pd.DataFrame({"subject.diagnosis.0.disease_diagnosis.value":disease_diagnosis_value, 
-                                    "subject.diagnosis.0.disease_diagnosis.id":disease_diagnosis_id})
-
+ 
     #print("================================================")
-    repertoire = json_normalize(data=DATA['Repertoire'])
+    repertoire = pd.json_normalize(data=DATA['Repertoire'])
     #print("================================================")
 
     # Optional 
-    concat_version = pd.concat([repertoire,data_pro,sample,cell_subset_species_dic,sample_0_sequencing_files_dic,\
-                                pcr_target,subject,sample_tissue_dic,disease_diag_dic],1).drop(["data_processing","sample",'sample.0.cell_subset',
-                                                               'sample.0.cell_species','sample.0.pcr_target','subject.diagnosis','sample.0.sequencing_files',\
-                                                                            'sample.0.tissue', 'subject.diagnosis.0.disease_diagnosis'],1)
+    concat_version = pd.concat([repertoire,data_pro,sample,\
+                                pcr_target,subject],1).drop(["data_processing","sample",
+                                                               'sample.0.pcr_target'],1)
     return concat_version
 
 def get_dataframes_from_metadata(master_MD_sheet):
@@ -176,11 +140,12 @@ def get_dataframes_from_metadata(master_MD_sheet):
         data_dafr = get_metadata_sheet(master_MD_sheet) 
         
         #grab the first row for the header
-        new_header = data_dafr.iloc[0] 
+        new_header = data_dafr.iloc[1] 
         #take the data less the header row
-        data_dafr = data_dafr[1:] 
+        data_dafr = data_dafr[2:] 
         #set the header row as the df header
         data_dafr.columns = new_header 
+        
     
         return data_dafr
     except:
@@ -214,14 +179,15 @@ def check_uniqueness_ir_rearrangement_nr(master_MD_dataframe,unique_field_id):
 
         
 def ir_seq_count_imgt(data_df,repertoire_id,query_dict,query_url, header_dict,annotation_dir):
-    
+    connecting_field = 'repertoire_id'
     number_lines = []
     sum_all = 0
     files_found = []
     files_notfound = []
     
     ir_file = data_df["data_processing_files"].tolist()[0].replace(" ","")  
-    ir_rea = data_df["data_processing_id"].tolist()[0] 
+    line_one = ir_file.split(",")
+    ir_rea = data_df[connecting_field].tolist()[0] 
     ir_sec = data_df["ir_curator_count"].tolist()[0]
     files = os.listdir(annotation_dir)
     
@@ -232,7 +198,7 @@ def ir_seq_count_imgt(data_df,repertoire_id,query_dict,query_url, header_dict,an
         sum_all = "NFMD"
 
     else:   
-        line_one = ir_file.split(",")
+        
         for item in line_one:
             if item in files:
                 files_found.append(item)
@@ -247,74 +213,81 @@ def ir_seq_count_imgt(data_df,repertoire_id,query_dict,query_url, header_dict,an
                 files_notfound.append(item)
 
         # Leave static for now
-        expect_pass = True
-        verbose = True
-        force = True
+    expect_pass = True
+    verbose = True
+    force = True
        
         # Perform the query. 
-        start_time = time.time()
-        query_json = processQuery(query_url, header_dict, expect_pass, query_dict, verbose, force)
-        json_data = json.loads(query_json)
+    start_time = time.time()
+    query_json = processQuery(query_url, header_dict, expect_pass, query_dict, verbose, force)
+    json_data = json.loads(query_json)
 
         # Validate facet count is non-empty
-        if json_normalize(json_data["Facet"]).empty == True:
-            ir_seq_API = "NINAPI"
-        else:
-            fac_count = json_normalize(json_data["Facet"])
-            ir_seq_API = str(fac_count['count'][0])
+    if json_normalize(json_data["Facet"]).empty == True:
+        ir_seq_API = "NINAPI"
+    else:
+        fac_count = json_normalize(json_data["Facet"])
+        ir_seq_API = str(fac_count['count'][0])
         
         # Validate ir_curator_count is there
-        if "ir_curator_count" in data_df.columns:
-            message_mdf=""
-            ir_sec = data_df["ir_curator_count"].tolist()[0]
-        else:
-            message_mdf= "ir_curator_count not found in metadata"
-            ir_sec = 0
+    if "ir_curator_count" in data_df.columns:
+        message_mdf=""
+        ir_sec = data_df["ir_curator_count"].tolist()[0]
+    else:
+        message_mdf= "ir_curator_count not found in metadata"
+        ir_sec = 0
         
         # Compare the numbers
-        test_flag = set([str(ir_seq_API), str(sum_all), str(int(ir_sec))])
-        if len(test_flag)==1:
-            test_result = True
-        else:
-            test_result=False
+    test_flag = set([str(ir_seq_API), str(sum_all), str(int(ir_sec))])
+    if len(test_flag)==1:
+        test_result = True
+    else:
+        test_result=False
         
-        print("\n")
-        print("Metadata file names: " + str(line_one))
-        print("Files found in server: " + str(files_found))
-        print("Files not found in server: " + str(files_notfound))
-        print(str(message_mdf))
-        print("Tested on : " + str(line_one) + "\n")
-        print("data_processing_id: ", str(ir_rea), "repertoire_id: ",int(fac_count['repertoire_id'][0]))
-        print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
-        print("\t\t\t\tir_sequence_count \t\t\t#Lines Annotation F \tTest Result")
-        print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
-        print("\t\t\t\tAPI Facet Count \t Metadata ir_curator_count")
-        print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
-        print("\t\t\t\t" + str(ir_seq_API) +" \t\t " + str(int(ir_sec)) + "\t\t" + str(sum_all) + "\t\t\t" + str(test_result))
-        print("\n")
-        print(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
+    print("\n")
+    print("Metadata file names: " + str(line_one))
+    print("Files found in server: " + str(files_found))
+    print("Files not found in server: " + str(files_notfound))
+    print(str(message_mdf))
+    print("Tested on : " + str(line_one) + "\n")
+    print("repertoire_id: ", str(ir_rea), "repertoire_id: ",fac_count['repertoire_id'][0])
+    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    print("\t\t\t\tir_sequence_count \t\t\t#Lines Annotation F \tTest Result")
+    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    print("\t\t\t\tAPI Facet Count \t Metadata ir_curator_count")
+    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    print("\t\t\t\t" + str(ir_seq_API) +" \t\t " + str(int(ir_sec)) + "\t\t" + str(sum_all) + "\t\t\t" + str(test_result))
+    print("\n")
+    print(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
 
         
 def ir_seq_count_igblast(data_df,repertoire_id,query_dict,query_url, header_dict,annotation_dir):     
+    connecting_field = 'repertoire_id'
     number_lines = []
     sum_all = 0
     files_found = []
     files_notfound = []
     
     ir_file = data_df["data_processing_files"].tolist()[0].replace(" ","")  
-    ir_rea = data_df["data_processing_id"].tolist()[0] 
+    line_one = ir_file.split(",")
+    ir_rea = data_df[connecting_field].tolist()[0] 
     ir_sec = data_df["ir_curator_count"].tolist()[0]
     files = os.listdir(annotation_dir)
     print(annotation_dir)
 
-    if "fmt" not in ir_file:
+    if "fmt" not in ir_file or "tsv" not in ir_file:
         number_lines.append(0)
         sum_all = "NFMD"
     else:   
-        line_one = ir_file.split(",")
         for item in line_one:
             if item in files:
                 if "fmt19" in item:
+                    files_found.append(item)
+                    stri = subprocess.check_output(['wc','-l',annotation_dir  + str(item)])
+                    hold_val = stri.decode().split(' ')
+                    number_lines.append(hold_val[0])
+                    sum_all = sum_all + int(hold_val[0]) - 1
+                elif "tsv" in item:
                     files_found.append(item)
                     stri = subprocess.check_output(['wc','-l',annotation_dir  + str(item)])
                     hold_val = stri.decode().split(' ')
@@ -325,56 +298,56 @@ def ir_seq_count_igblast(data_df,repertoire_id,query_dict,query_url, header_dict
             else:
                 files_notfound.append(item)
                 
-        # Leave static for now
-        expect_pass = True
-        verbose = True
-        force = True
+    # Leave static for now
+    expect_pass = True
+    verbose = True
+    force = True
         
-        # Perform the query. 
-        start_time = time.time()
-        query_json = processQuery(query_url, header_dict, expect_pass, query_dict, verbose, force)
-        json_data = json.loads(query_json)
+    # Perform the query. 
+    start_time = time.time()
+    query_json = processQuery(query_url, header_dict, expect_pass, query_dict, verbose, force)
+    json_data = json.loads(query_json)
         
-        # Validate facet query is non-empty
-        if json_normalize(json_data["Facet"]).empty == True:
-            ir_seq_API = "NINAPI"
-        else:
-            fac_count = json_normalize(json_data["Facet"])
-            ir_seq_API = str(fac_count['count'][0]) 
+    # Validate facet query is non-empty
+    if json_normalize(json_data["Facet"]).empty == True:
+        ir_seq_API = "NINAPI"
+    else:
+        fac_count = json_normalize(json_data["Facet"])
+        ir_seq_API = str(fac_count['count'][0]) 
         
-        # Validate ir_curator_count exists
-        if "ir_curator_count" in data_df.columns:
-            message_mdf=""
-            ir_sec = data_df["ir_curator_count"].tolist()[0]
-        else:
-            message_mdf= "ir_curator_count not found in metadata"
-            ir_sec = 0
-        # Run test
-        test_flag = set([str(ir_seq_API), str(sum_all), str(int(ir_sec))])
-        if len(test_flag)==1:
-            test_result = True
-        else:
-            test_result=False
+    # Validate ir_curator_count exists
+    if "ir_curator_count" in data_df.columns:
+        message_mdf=""
+        ir_sec = data_df["ir_curator_count"].tolist()[0]
+    else:
+        message_mdf= "ir_curator_count not found in metadata"
+        ir_sec = 0
+    # Run test
+    test_flag = set([str(ir_seq_API), str(sum_all), str(int(ir_sec))])
+    if len(test_flag)==1:
+        test_result = True
+    else:
+        test_result=False
         
-        print("\n")
-        print("Metadata file names: " + str(line_one))
-        print("Files found in server: " + str(files_found))
-        print("Files not found in server: " + str(files_notfound))
-        print(str(message_mdf))
-        print("Tested on : " + str(line_one) + "\n")
-        print("data_processing_id: ", str(ir_rea), "repertoire_id: ",int(fac_count['repertoire_id'][0]))
-        print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
-        print("\t\t\t\tir_sequence_count \t\t\t#Lines Annotation F \tTest Result")
-        print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
-        print("\t\t\t\tAPI Facet Count \t Metadata ir_curator_count")
-        print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
-        print("\t\t\t\t" + str(ir_seq_API) +" \t\t " + str(int(ir_sec)) + "\t\t" + str(sum_all) + "\t\t\t" + str(test_result))
-        print("\n")
-        print(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
+    print("\n")
+    print("Metadata file names: " + str(line_one))
+    print("Files found in server: " + str(files_found))
+    print("Files not found in server: " + str(files_notfound))
+    print(str(message_mdf))
+    print("Tested on : " + str(line_one) + "\n")
+    print("repertoire_id: ", str(ir_rea), "repertoire_id: ",fac_count['repertoire_id'][0])
+    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    print("\t\t\t\tir_sequence_count \t\t\t#Lines Annotation F \tTest Result")
+    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    print("\t\t\t\tAPI Facet Count \t Metadata ir_curator_count")
+    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    print("\t\t\t\t" + str(ir_seq_API) +" \t\t " + str(int(ir_sec)) + "\t\t" + str(sum_all) + "\t\t\t" + str(test_result))
+    print("\n")
+    print(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
 
 
 def ir_seq_count_mixcr(data_df,repertoire_id,query_dict,query_url, header_dict,annotation_dir):
-    
+    connecting_field = 'repertoire_id'
     number_lines = []
     sum_all = 0
     files_found = []
@@ -385,8 +358,8 @@ def ir_seq_count_mixcr(data_df,repertoire_id,query_dict,query_url, header_dict,a
     
     else:
         ir_file = data_df["data_processing_files"].tolist()[0].replace(" ","")
-        
-    ir_rea = data_df["data_processing_id"].tolist()[0] 
+        line_one = ir_file.split(",")
+    ir_rea = data_df[connecting_field].tolist()[0] 
     ir_sec = data_df["ir_curator_count"].tolist()[0]
     files = os.listdir(annotation_dir)
     
@@ -397,7 +370,7 @@ def ir_seq_count_mixcr(data_df,repertoire_id,query_dict,query_url, header_dict,a
         sum_all = "NFMD"
 
     else:
-        line_one = ir_file.split(",")
+        
         
         for item in line_one:
             if item in files:
@@ -412,53 +385,53 @@ def ir_seq_count_mixcr(data_df,repertoire_id,query_dict,query_url, header_dict,a
                 files_notfound.append(item)
 
         # Leave static for now
-        expect_pass = True
-        verbose = True
-        force = True
+    expect_pass = True
+    verbose = True
+    force = True
         
        
         # Perform the query. 
-        start_time = time.time()
-        query_json = processQuery(query_url , header_dict, expect_pass, query_dict, verbose, force)
+    start_time = time.time()
+    query_json = processQuery(query_url , header_dict, expect_pass, query_dict, verbose, force)
         
-        json_data = json.loads(query_json)
+    json_data = json.loads(query_json)
         # Validate query is non-empty
         
-        if json_normalize(json_data["Facet"]).empty == True:
-            ir_seq_API = "NINAPI"
-        else:
-            fac_count = json_normalize(json_data["Facet"])
-            ir_seq_API = str(fac_count['count'][0]) 
+    if json_normalize(json_data["Facet"]).empty == True:
+        ir_seq_API = "NINAPI"
+    else:
+        fac_count = json_normalize(json_data["Facet"])
+        ir_seq_API = str(fac_count['count'][0]) 
         
-        # Validate ir_curator_count exists
-        if "ir_curator_count" in data_df.columns:
-            message_mdf=""
-            ir_sec = data_df["ir_curator_count"].tolist()[0]
-        else:
-            message_mdf= "ir_curator_count not found in metadata"
-            ir_sec = 0 
+    # Validate ir_curator_count exists
+    if "ir_curator_count" in data_df.columns:
+        message_mdf=""
+        ir_sec = data_df["ir_curator_count"].tolist()[0]
+    else:
+        message_mdf= "ir_curator_count not found in metadata"
+        ir_sec = 0 
             
-        test_flag = set([str(ir_seq_API), str(sum_all), str(int(ir_sec))])
-        if len(test_flag)==1:
-            test_result = True
-        else:
-            test_result=False
+    test_flag = set([str(ir_seq_API), str(sum_all), str(int(ir_sec))])
+    if len(test_flag)==1:
+        test_result = True
+    else:
+        test_result=False
         
-        print("\n")
-        print("Metadata file names: " + str(line_one))
-        print("Files found in server: " + str(files_found))
-        print("Files not found in server: " + str(files_notfound))
-        print(str(message_mdf))
-        print("Tested on : " + str(line_one) + "\n")
-        print("data_processing_id: ", str(ir_rea), "repertoire_id: ",int(fac_count['repertoire_id'][0]))
-        print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
-        print("\t\t\t\tir_sequence_count \t\t\t#Lines Annotation F \tTest Result")
-        print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
-        print("\t\t\t\tAPI Facet Count \t Metadata ir_curator_count")
-        print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
-        print("\t\t\t\t" + str(ir_seq_API) +" \t\t " + str(int(ir_sec)) + "\t\t" + str(sum_all) + "\t\t\t" + str(test_result))
-        print("\n")
-        print(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
+    print("\n")
+    print("Metadata file names: " + str(line_one))
+    print("Files found in server: " + str(files_found))
+    print("Files not found in server: " + str(files_notfound))
+    print(str(message_mdf))
+    print("Tested on : " + str(line_one) + "\n")
+    print("repertoire_id: ", str(ir_rea), "repertoire_id: ",fac_count['repertoire_id'][0])
+    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    print("\t\t\t\tir_sequence_count \t\t\t#Lines Annotation F \tTest Result")
+    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    print("\t\t\t\tAPI Facet Count \t Metadata ir_curator_count")
+    print(". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ")
+    print("\t\t\t\t" + str(ir_seq_API) +" \t\t " + str(int(ir_sec)) + "\t\t" + str(sum_all) + "\t\t\t" + str(test_result))
+    print("\n")
+    print(" - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -")
 
             
 def rename_cols(flattened_sub_df,field_name):
@@ -556,6 +529,7 @@ if __name__ == "__main__":
     details_dir = options.details_dir
     cover_test = options.Coverage
     
+    connecting_field = 'repertoire_id'
     
     query_url = base_url + "/airr/v1/" + entry_pt
     
@@ -587,8 +561,9 @@ if __name__ == "__main__":
     print("ELAPSED DOWNLOAD TIME (in minutes): %s" % (total_time/60))
     print("ELAPSED DOWNLOAD TIME (in hours): %s" % (total_time/3600))
       
-    filename =  str(query_files.split("/")[-1].split(".")[0]) + "_OUT.json"
-    json_data = parse_query(query_json,"./" + str(query_files.split("/")[-1].split(".")[0]))
+    filename =  str(query_files.split("/")[-1].split(".")[0]) + "_" + str(study_id)  + "__OUT.json"
+    json_data = parse_query(query_json,str(details_dir)  + str(query_files.split("/")[-1].split(".")[0]) + "_" + str(study_id) + "_")
+
 
 #     # Uncomment when AIRR test is ready to be used again
     if entry_pt=="repertoire":
@@ -596,7 +571,7 @@ if __name__ == "__main__":
         print("In repertoire entry point",entry_pt)
     
         try:
-            airr.load_repertoire("./" + filename,validate = True)
+            airr.load_repertoire(str(details_dir) + filename,validate = True)
             print("Successful repertoire loading - AIRR test passed\n")
         except airr.ValidationError as err:  
             print("ERROR: AIRR repertoire validation failed for file %s - %s" %
@@ -604,38 +579,47 @@ if __name__ == "__main__":
             print("\n")
         print("---------------------------------------------------------------------------------------------------------------------------------------------------")
     
-    # Begin sanity checking 
+    #Begin sanity checking 
     print("########################################################################################################")
     print("---------------------------------------VERIFY FILES ARE HEALTHY-----------------------------------------\n")
     print("---------------------------------------------Metadata file----------------------------------------------\n")
     # GET METADATA    
-    if "xlsx" in master_md:
-        verify_non_corrupt_file(master_md)
-        master = get_dataframes_from_metadata(master_md)
-    elif "csv" in master_md:
-        master = pd.read_csv(master_md ,encoding='utf8')
-        #master = master.loc[:, ~master.columns.str.contains('^Unnamed')]
-        
-        #grab the first row for the header
-        new_header = master.iloc[1] 
-        #take the data less the header row
-        master = master[2:] 
-        #set the header row as the df header
-        master.columns = new_header 
-    elif "json" in master_md:
-        with open(master_md) as json_file:
-            master = json.load(json_file)
-            master  = flatten_json(master)
+    try:
+        if "xlsx" in master_md:
+            verify_non_corrupt_file(master_md)
+            master = get_dataframes_from_metadata(master_md)
+        elif "csv" in master_md:
+            master = pd.read_csv(master_md ,encoding='utf8')
+            master = master.loc[:, ~master.columns.str.contains('^Unnamed')]
+
+            #grab the first row for the header
+#             new_header = master.iloc[1] 
+#             #take the data less the header row
+#             master = master[2:] 
+            #set the header row as the df header
+#             master.columns = new_header 
+            
+        elif "tsv" in master_md:
+
+            master = pd.read_csv(master_md,encoding='utf8',sep="\t")
+        elif "json" in master_md:
+            with open(master_md) as json_file:
+                master = json.load(json_file)
+                master  = flatten_json(master)
+    except:
+        print("Warning: Provided wrong type file: cannot read metadata.")
+        sys.exit(0)
     
 
     # Get metadata and specific study
+    master = master.loc[:, master.columns.notnull()]
     master = master.replace('\n',' ', regex=True)
     master["study_id"] = master["study_id"].str.strip()
 
     data_df = master.loc[master['study_id'] == study_id]
     #data_df = data_df.replace('.00','', regex=True)
 
-    input_unique_field_id = "ir_rearrangement_number"
+    input_unique_field_id = connecting_field
     # Check entries under unique identifier are  unique
     check_uniqueness_ir_rearrangement_nr(data_df,input_unique_field_id)
 
@@ -647,7 +631,7 @@ if __name__ == "__main__":
     no_rows = data_df.shape[0]
     
     # Mapping file
-    map_csv = pd.read_csv(mapping_file,sep="\t",encoding="utf8",engine='python')
+    map_csv = pd.read_csv(mapping_file,sep="\t",encoding="utf8",engine='python', error_bad_lines=False)
     ir_adc_fields = map_csv["ir_adc_api_response"].tolist()
     ir_cur_fields = map_csv["ir_curator"].tolist()
     ir_type_fileds = map_csv["airr_type"].tolist()
@@ -656,7 +640,7 @@ if __name__ == "__main__":
     rep_map_type = ir_type_fileds[0:89]
     
     # API response - wait until specs are done
-    DATA = airr.load_repertoire(filename)
+    DATA = airr.load_repertoire(str(details_dir) + filename)
     
     print("================================================")
     
@@ -679,23 +663,36 @@ if __name__ == "__main__":
     print("Field names in mapping, ir_adc_api_response, not in API response\n")
     
     for item in field_names_in_mapping_not_in_API:
-        print(item)
+        if type(item)==float:
+            continue
+        else:
+            print(item)
         
     print("---------------------------------------------------------------------------------------------------------------")
     print("Field names in mapping, ir_curator, not in metadata fields\n")
     for item in field_names_in_mapping_not_in_MD:
-        print(item)
+        if type(item)==float:
+            continue
+        else:
+            print(item)
 
-    # Get entries of interest in API response
-    list_a = concat_version["data_processing.0.data_processing_id"].to_list()
-    int_list_a = [item for item in list_a]
-    
-    # Get corresponding entries in metadata 
-    sub_data = data_df[data_df['ir_rearrangement_number'].isin(int_list_a)]
-    unique_items = sub_data['ir_rearrangement_number'].to_list()
-    
+    if connecting_field not in data_df.columns or "repertoire_id" not in concat_version.columns:
+        print("Failure, need an ID to compare fields, usually " + str(connecting_field) + " in metadata file and repertoire_id in ADC API response. If at least one of these is missing, the test cannot be completed.")
+        
+        sys.exit(0)
+    else:
+        # Get entries of interest in API response
+        list_a = concat_version["repertoire_id"].to_list()
+        int_list_a = [item for item in list_a]
+
+        # Get corresponding entries in metadata 
+        sub_data = data_df[data_df[connecting_field].isin(int_list_a)]
+        unique_items = sub_data[connecting_field].to_list()
+
     
 
+    if len(unique_items)==0:
+        print("WARNING: NON-MATCHING REPERTOIRE IDS - no id's match at ADC API and metadata level. Test results 'pass' as there is nothing to compare. Verify the repertoire ids in metadata are correct.")
     print("---------------------------------------------------------------------------------------------------------------")
 
         # CONTENT TESTING
@@ -709,16 +706,18 @@ if __name__ == "__main__":
         md_val = []
         data_proc_id = []
         
-        # Iterate over each rearrangement_number/data_processing_id
+        # Iterate over each rearrangement_number/repertoire_id
         for item in unique_items:
+            
         
             # Get the row correspondong to the matching response in API
-            rowAPI = concat_version[concat_version['data_processing.0.data_processing_id']==str(item)]
+            rowAPI = concat_version[concat_version['repertoire_id']==str(item)]
 
-            rowMD = sub_data[sub_data["ir_rearrangement_number"]==item]
+            rowMD = sub_data[sub_data[connecting_field]==item]
             
             # Content check
             for i in in_both:
+
                 # Get row of interest
                 md_entry = rowMD[i[1]].to_list()#[0]
                 API_entry = rowAPI[i[0]].to_list()#[0]
@@ -749,7 +748,7 @@ if __name__ == "__main__":
                              "MD value": md_val}) 
         # Perfect results 
         if content_results.empty:
-            print("FULL PASS")
+            print("Could not find differring results between column content.")
         # Not so perfect results
         else:
             print("Some fields may require attention:")
@@ -762,15 +761,13 @@ if __name__ == "__main__":
     if "FC" in cover_test:
         print("Facet count vs ir_curator_count vs line count comparison\n")
         for item in unique_items:
+            print("---------------------------------------------------------------------------------------------------------------")
             print("ITEM",item)
-            rowAPI = concat_version[concat_version['data_processing.0.data_processing_id']==str(item)]
+            rowAPI = concat_version[concat_version['repertoire_id']==str(item)]
 
-            rowMD = sub_data[sub_data["ir_rearrangement_number"]==item]
+            rowMD = sub_data[sub_data[connecting_field]==item]
             
             time.sleep(1)
-            print("---------------------------------------------------------------------------------------------------------------")
-            print("Facet count\n")
-
             # Process json file into JSON structure readable by Python
             query_dict = process_json_files(force,verbose,str(facet_ct) + "facet_repertoire_id_" + str(rowAPI['repertoire_id'].to_list()[0]) + ".json")
 
@@ -782,7 +779,7 @@ if __name__ == "__main__":
             if type(rowMD["data_processing_files"].to_list()[0])==float:
                 number_lines = []
                 sum_all = 0
-                print("FOUND ODD ENTRY: " + str(data_df["data_processing_files"].tolist()[0]) + "\ndata_processing_id " + str(data_df["data_processing_id"].tolist()[0] ) + ". Writing 0 on this entry, but be careful to ensure this is correct.\n")
+                print("FOUND ODD ENTRY: " + str(data_df["data_processing_files"].tolist()[0]) + "\nrepertoire_id " + str(data_df["repertoire_id"].tolist()[0] ) + ". Writing 0 on this entry, but be careful to ensure this is correct.\n")
                 number_lines.append(0)
                 sum_all = sum_all + 0
 
@@ -791,18 +788,21 @@ if __name__ == "__main__":
             # Process each according to the tool used
             else:
                 ############## CASE 1
-                if tool=="IMGT high-Vquest":
+                if tool=="IMGT high-Vquest" or "vquest" in annotation_dir.lower():
                     
-                    ir_seq_count_imgt(rowMD,int(rowAPI['repertoire_id'].to_list()[0]),query_dict,base_url + "/airr/v1/rearrangement", header_dict,annotation_dir)
-
-
+                    ir_seq_count_imgt(rowMD,rowAPI['repertoire_id'].to_list()[0],query_dict,base_url + "/airr/v1/rearrangement", header_dict,annotation_dir)
+                    
                 ############## CASE 2            
-                elif tool=="igblast":
-                    ir_seq_count_igblast(rowMD,int(rowAPI['repertoire_id'].to_list()[0]),query_dict,base_url + "/airr/v1/rearrangement", header_dict,annotation_dir)
-
+                elif tool=="igblast" or "airr" in annotation_dir.lower():
+                    ir_seq_count_igblast(rowMD,rowAPI['repertoire_id'].to_list()[0],query_dict,base_url + "/airr/v1/rearrangement", header_dict,annotation_dir)
+               
                 ############## CASE 3                       
-                elif tool=="MiXCR":   
-                    ir_seq_count_mixcr(rowMD,int(rowAPI['repertoire_id'].to_list()[0]),query_dict,base_url + "/airr/v1/rearrangement", header_dict,annotation_dir)
+                elif tool=="MiXCR" or "mixcr" in annotation_dir.lower():   
+                    ir_seq_count_mixcr(rowMD,rowAPI['repertoire_id'].to_list()[0],query_dict,base_url + "/airr/v1/rearrangement", header_dict,annotation_dir)
+                    
+                else:
+                    
+                    print("WARNING: Could not find appropriate annotation tool: please ensure that ir_rearrangement_tool or the path to your annotation files corresponds to igblast (airr), MiXCR or VQUEST")
 
             
     print("---------------------------------------------------------------------------------------------------------------")
