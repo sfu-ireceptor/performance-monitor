@@ -2,7 +2,7 @@
 ######### AUTHOR: LAURA GUTIERREZ FUNDERBURK
 ######### SUPERVISOR: JAMIE SCOTT, FELIX BREDEN, BRIAN CORRIE
 ######### CREATED ON: December 5 2019
-######### LAST MODIFIED ON: December 15, 2019
+######### LAST MODIFIED ON: August 25 2020
 
 """
 This script downloads TSV from airr-api and stores into file - it subsequently performs Data Provenance tests 
@@ -11,13 +11,166 @@ This script downloads TSV from airr-api and stores into file - it subsequently p
 from curlairripa import *       # https://test.pypi.org/project/curlairripa/ 
 import time                     # time stamps
 import pandas as pd
-from pandas.io.json import json_normalize # parse JSON response into pandas df 
 import argparse                 # Input parameters from command line 
 import os, sys
 import airr
 import numpy as np
 import zipfile
 import math
+import string
+
+
+def check_no_odd_words(dataframe,column_name,ig_tr_class,all_any_option):
+    
+    try:
+        # Get dimensions of dataframe
+        all_entries_in_column = dataframe[column_name].tolist()
+        iterate_over = len(all_entries_in_column)
+        
+        # Initialize array - the items in this array will be tested and correspond to each entry in each of the alleles
+        # listed under v,d,j call fields
+        new_arr = []
+        # Iterate over all entries in pandas
+        for i in range(iterate_over):
+            #print(all_entries_in_column[i])
+            # Skip empty entries - python pandas parses NaN as float type
+            if type(all_entries_in_column[i])==float:
+                continue
+            else:
+                # Iterate over all alleles in each row
+                for j in range(len(all_entries_in_column[i])):
+                        # Append all entries in new_array
+                    new_arr.append(all_entries_in_column[i][j])
+    
+        # Determine whether the desired word is found in each entry in the array
+        if all_any_option=="all":
+            return all(ig_tr_class in item for item in new_arr)
+        # Determine whether the desired word exists in the entire array
+        elif all_any_option=="any":
+            return any(ig_tr_class in item for item in new_arr)
+    
+    except:
+        
+        print("WARNING: Input is a pandas dataframe, a column name within the dataframe containing entries for\
+        v call, d call or j call, and a string from the following list: IG, TR")
+
+def alphabet_to_check(nucleotide_base_list):
+    '''
+    This function takes a list of characters from the alphabet, and returns a list with characters from the alphabet which exclude the ones provided
+    
+    Args:
+    
+        nucleotide_base_list (list): contains letters in the alphabet corresponding to nucleotide bases
+        
+    Returns:
+    
+        DNA_nucleo_list (list): list containing all letters in the alphabet except those provided by the user 
+    '''
+    
+    try:
+
+        alphabet_string = string.ascii_lowercase
+        alphabet_list = [str(i) for i in alphabet_string]
+        alphabet_set = set(alphabet_list)
+        nucleotide_base_list = [x.lower() for x in nucleotide_base_list]
+        DNA_nucleo_set = alphabet_set.difference(set(nucleotide_base_list))
+        DNA_nucleo_list = list(DNA_nucleo_set)
+
+        return DNA_nucleo_list
+    except:
+        print("WARNING, expected a list containing nucleotide bases")
+        print("nucleotide_base_list arg returns:", nucleotide_base_list)
+
+
+def check_field_is_non_empty(dataframe,field,output_dir,rep_id):
+    '''
+    Function that checks whether a field contains empty entries
+    
+    Args:
+        
+        dataframe (pandas dataframe object): contains an AIRR compliant dataframe for rearrangement data
+        field (string): name of field to be tested
+        output_dir (string): path where output file should be stored
+        rep_id (string): repertoire_id being tested 
+        
+    Returns: 
+    
+        test_result (bool): True if no NaN entries were found, False otherwise 
+    '''
+
+    if dataframe[field].isna().sum()==0:
+        
+        test_result = True
+        
+        print("PASS",str(field),"has no empty entries.")
+    else:
+        
+        test_result=False
+        
+        print("WARNING",str(field),"has empty entries.")
+        print("Generating sequence_id and repertoire_id list with problems")
+        dt = dataframe[dataframe[field].isna()==True][[field,'sequence_id','repertoire_id']]
+        
+        dt.to_csv("NAN_entries_in_" + str(field) +"_" + str(rep_id) + ".csv")
+        
+    return test_result 
+
+
+        
+def sequence_check_against_DNA_nb(dataframe,field,nucleotide_base_list,output_dir,rep_id):
+    '''
+    This function checks whether odd characters (characters not found in the DNA nucleotide bases)
+    for a given field, typically sequences and generates a CSV with problematic entries and id information
+    
+    Args:
+    
+        dataframe (pandas dataframe object): contains an AIRR compliant dataframe for rearrangement data
+        field (string): name of field to be tested
+        nucleotide_base_list (list): list containing characters (typically 'a','c','t','g')
+        output_dir (string): path where output file should be stored
+        rep_id (string): repertoire_id being tested 
+    
+    Returns:
+        None
+    
+    '''
+    try:
+    
+        # Create non-nb characters list    
+        DNA_nucleo_list = alphabet_to_check(nucleotide_base_list)
+
+            # Turn entries into lower case
+        sample_file_seq = dataframe[field].str.lower()
+
+            # Build df with problematic entries
+        all_dfs = []
+
+            # Iterate over non-nb character list
+        for i in range(len(DNA_nucleo_list)):
+                # Check if non-nb characters are present
+            df = dataframe[sample_file_seq.str.contains(DNA_nucleo_list[i])][[field,'sequence_id','repertoire_id']]
+            all_dfs.append(df)
+
+        final_df = pd.concat(all_dfs)
+
+        if final_df.empty == True:
+
+            print("DNA Nucleotide Base Check Pass")
+        else:
+            print("WARNING: DNA Nucleotide Base Check Fails")
+            print("Check","NAN_entries_in_" + str(field) +"_" + str(rep_id) + ".csv","for details")
+
+            dt.to_csv(str(output_dir) + "DNA_nucleotide_base_errors_in_" + str(field) +"_" + str(rep_id) + ".csv")
+
+        return None
+    except:
+        print("WARNING: provide a dataframe object containing AIRR compliant content, a field in AIRR Rearrangement, a list with NB, an output directory,\
+        and the corresponding repertoire id")
+        print("Received df object containing:", type(dataframe))
+        print("Received field name:",field)
+        print("Received NB list:",nucleotide_base_list)
+        print("Received output directory:",output_dir)
+        print("Received repertoire id:",rep_id)
 
 def getArguments():
     # Set up the command line parser
@@ -68,39 +221,6 @@ def getArguments():
     options = parser.parse_args()
     return options
 
-def check_no_odd_words(dataframe,column_name,ig_tr_class,all_any_option):
-    
-    try:
-        # Get dimensions of dataframe
-        all_entries_in_column = dataframe[column_name].tolist()
-        iterate_over = len(all_entries_in_column)
-        
-        # Initialize array - the items in this array will be tested and correspond to each entry in each of the alleles
-        # listed under v,d,j call fields
-        new_arr = []
-        # Iterate over all entries in pandas
-        for i in range(iterate_over):
-            #print(all_entries_in_column[i])
-            # Skip empty entries - python pandas parses NaN as float type
-            if type(all_entries_in_column[i])==float:
-                continue
-            else:
-                # Iterate over all alleles in each row
-                for j in range(len(all_entries_in_column[i])):
-                        # Append all entries in new_array
-                    new_arr.append(all_entries_in_column[i][j])
-    
-        # Determine whether the desired word is found in each entry in the array
-        if all_any_option=="all":
-            return all(ig_tr_class in item for item in new_arr)
-        # Determine whether the desired word exists in the entire array
-        elif all_any_option=="any":
-            return any(ig_tr_class in item for item in new_arr)
-    
-    except:
-        
-        print("WARNING: Input is a pandas dataframe, a column name within the dataframe containing entries for\
-        v call, d call or j call, and a string from the following list: IG, TR")
 
         
 
@@ -127,22 +247,12 @@ if __name__ == "__main__":
     # Get the HTTP header information (in the form of a dictionary)
     header_dict = getHeaderDict()
     
-     # Validate file
-    print("---------------------------------------------------------------------------------------------------------------------------------------------------")
-    print("AIRR JSON Input Validation")
     
-    try:
-        airr.load_repertoire(query_files, validate=True)
-        print("Successful repertoire loading\n")
-    except:  
-        print("ERROR: AIRR repertoire validation failed for file %s - %s" % (query_files, airr.ValidationError))
-        print("\n")
-    print("---------------------------------------------------------------------------------------------------------------------------------------------------")
     # Process json file into JSON structure readable by Python
     query_dict = process_json_files(force,verbose,query_files)
     
     # Turn response into pandas dataframe 
-    json_response_df = json_normalize(query_dict)
+    json_response_df = pd.json_normalize(query_dict)
     
     # Perform the query. Time it
     start_time = time.time()
@@ -329,7 +439,7 @@ if __name__ == "__main__":
         print("WARNING: length of junction and junction_length need to be revised - " + str(len(non_matching_lengths)) + " non-matching non-null values found")
         print("ACTION-------------------------------------------------------> Check " + "store_info_non_matching_non_null__id_" +rep_id + ".csv" + " for details.")
         with open(str(output_dir) + "store_info_non_matching_non_null__id_" + rep_id + ".csv","w") as f:
-            f.write("junction_aa,junction_aa_len,sequence_id,sample_id,productive,Base_URL\n")
+            f.write("junction,junction_len,sequence_id,sample_id,productive,Base_URL\n")
             for item in non_matching_lengths:
                 for it in item:
                     f.write(it + ",")
@@ -343,5 +453,18 @@ if __name__ == "__main__":
 
     print("---------------------------------------------------------------------------------------------------------------------------------------------------")
     print("End of tests\n")
+    
+    # TEST empty values under sequences
+    print("---------------------------------------------------------------------------------------------------------------------------------------------------")
+    print("\n")
+    print("Checking for empty entries under sequences field \n")
+    check_field_is_non_empty(sample_file,"sequence",output_dir,rep_id)
+    
+    # TEST odd characters in sequences field
+    print("---------------------------------------------------------------------------------------------------------------------------------------------------")
+    print("\n")
+    print("Checking for empty entries under sequences field \n")
+    sequence_check_against_DNA_nb(sample_file,"sequence",['a','c','t','g','n'],output_dir,rep_id)
+    
     sys.exit(0)
     
