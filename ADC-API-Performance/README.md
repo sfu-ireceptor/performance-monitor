@@ -10,14 +10,16 @@ This script performs queries
 `
 
     usage: adc_performance_testing.py [-h] [-v]
-                                      base ipa_arr entry_point json_files
+                                  base ipa_arr entry_point json_files
 
     positional arguments:
-      base           Indicate the full path to where performance test results will be stored 
-      ipa_arr        String containing URL to API server (e.g. https://airr-api2.ireceptor.org)
+      base           Indicate the full path to where performance test results will
+                     be stored
+      ipa_arr        String containing URL to API server (e.g. https://airr-
+                     api2.ireceptor.org)
       entry_point    Options: string 'rearragement' or string 'repertoire'
-      json_files     Enter full path to JSON queries 
-      
+      json_files     Enter full path to JSON queries
+
     optional arguments:
       -h, --help     show this help message and exit
       -v, --verbose  Run the program in verbose mode.
