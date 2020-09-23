@@ -2,7 +2,7 @@
 
 ## ADC API Performance Testing Script 
 
-This script performs queries
+This script performs queries (provided by the user) on a given service. 
 
 #### Usage
 
