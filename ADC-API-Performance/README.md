@@ -30,7 +30,9 @@ This script plots performance test results from the queries obtained using the s
 
 #### Usage
 
-    usage: plot_performance.py [-h] [-v] [-s] path s_date e_date
+`python3 adc_api_plot_performance.py -h`
+
+    usage: adc_api_plot_performance.py [-h] [-v] [-s] path s_date e_date
 
     positional arguments:
       path
