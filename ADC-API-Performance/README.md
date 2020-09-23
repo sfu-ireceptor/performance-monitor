@@ -6,7 +6,7 @@ This script performs queries
 
 #### Usage
 
-`python3 adc_api_performancetest.py -h
+`python3 adc_performancetest.py -h
 `
 
     usage: adc_performance_testing.py [-h] [-v]
@@ -30,7 +30,7 @@ This script plots performance test results from the queries obtained using the s
 
 #### Usage
 
-    usage: adc_api_plot_performance.py [-h] [-v] [-s] path s_date e_date
+    usage: plot_performance.py [-h] [-v] [-s] path s_date e_date
 
     positional arguments:
       path
