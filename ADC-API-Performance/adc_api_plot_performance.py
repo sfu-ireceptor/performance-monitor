@@ -2,7 +2,7 @@
 ######### AUTHOR: LAURA GUTIERREZ FUNDERBURK
 ######### SUPERVISOR: JAMIE SCOTT, FELIX BREDEN, BRIAN CORRIE
 ######### CREATED ON: MAY 20, 2019
-######### LAST MODIFIED ON: April 29, 2020
+######### LAST MODIFIED ON: September 10, 2020
 """
 
 Description: this script takes as input a set of .csv files containing performance query results and it outputs a series of plots comparing hourly time taken to finish query
