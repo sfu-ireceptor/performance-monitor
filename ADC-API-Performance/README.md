@@ -32,18 +32,42 @@ This script plots performance test results from the queries obtained using the s
 
 `python3 adc_api_plot_performance.py -h`
 
-    usage: adc_api_plot_performance.py [-h] [-v] [-s] path s_date e_date
+    usage: adc_api_plot_performance.py [-h] [-v] [-s]
+                                   path s_date e_date output_dir
 
     positional arguments:
       path
       s_date
       e_date
+      output_dir
 
     optional arguments:
       -h, --help     show this help message and exit
       -v, --verbose  Run the program in verbose mode.
       -s, --scale    Scale the graphs so they are all on the same y-axis scale.
+      
+## ADC API Repertoire Performance Plotting Script 
 
+This is a complementary script focused on repertoire performance. The same script is used to perform queries. 
+
+#### Usage
+
+`python3 plot_repertoire_performance -h`
+
+    usage: plot_repertoire_performance.py [-h] [-v] [-s]
+                                      path s_date e_date output_dir
+
+    positional arguments:
+      path
+      s_date
+      e_date
+      output_dir
+
+    optional arguments:
+      -h, --help     show this help message and exit
+      -v, --verbose  Run the program in verbose mode.
+      -s, --scale    Scale the graphs so they are all on the same y-axis scale.
+      
 ## curlairripa Python Package 
 
 Open a command line, change directories to where the performance script is, and enter the following command
